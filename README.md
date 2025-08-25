@@ -32,10 +32,12 @@ lib/
     ├── constants.dart            # Colors, sizes, strings constants
     └── validation.dart           # Email and password validation
 
-assets/
-├── images/
-│   └── background1.png           # Background image for pages
-└── fonts/                        # Google Fonts (Mulish)
+assets
+├── fonts/
+└── images/
+    ├── background1.png
+    ├── homebackground.png
+    └── image.png
 ```
 
 ## 🎨 Design System
@@ -57,7 +59,6 @@ assets/
 - **Custom Button**: Pressed state styling, adaptive for welcome/login pages
 - **Custom TextField**: White background, 12px border radius, prefix/suffix icons
 - **Custom Bottom Sheet**: Drag indicator, configurable height and title
-- **Cards**: Shadow effects, border radius, hover states
 
 ## 🛠️ User Flow
 
