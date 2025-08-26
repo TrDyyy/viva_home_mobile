@@ -210,7 +210,7 @@ class BasePageWidget extends StatelessWidget {
         alignment: WrapAlignment.center,
         children: config.cards.map((card) {
           return SizedBox(
-            width: MediaQuery.of(context).size.width / 2.3,
+            width: AppSizes.screenWidth(context) / 2.3,
             child: _buildGridCard(context, card),
           );
         }).toList(),
@@ -219,12 +219,11 @@ class BasePageWidget extends StatelessWidget {
   }
 
   Widget _buildListLayout(BuildContext context) {
-    return Column(
-      children: config.cards.map((card) {
-        return Expanded(
-          child: _buildListCard(context, card),
-        );
-      }).toList(),
+    return ListView.builder(
+      itemCount: config.cards.length,
+      itemBuilder: (context, index) {
+        return _buildListCard(context, config.cards[index]);
+      },
     );
   }
 
@@ -293,7 +292,9 @@ class BasePageWidget extends StatelessWidget {
   Widget _buildListCard(BuildContext context, CardItemConfig card) {
     return Container(
       width: double.infinity,
-      height: AppSizes.container(context, SizeCategory.xxxlarge), 
+      constraints: BoxConstraints(
+        minHeight: AppSizes.container(context, SizeCategory.large),
+      ),
       decoration: BoxDecoration(
         color: card.isEnabled ? AppColors.white : AppColors.lightGray,
         border: card.isEnabled
@@ -310,36 +311,46 @@ class BasePageWidget extends StatelessWidget {
         child: InkWell(
           onTap: card.isEnabled ? card.onTap : null,
           borderRadius: BorderRadius.circular(AppSizes.radiusMedium(context)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                card.icon,
-                size: AppSizes.iconXLarge(context),
-                color: card.isEnabled ? AppColors.primaryTeal : AppColors.darkGray,
-              ),
-              SizedBox(height: AppSizes.paddingMedium(context)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    card.title,
-                    style: TextStyle(
-                      fontSize: AppSizes.fontMedium(context),
-                      fontWeight: FontWeight.w600,
-                      color: card.isEnabled ? AppColors.textDark : AppColors.darkGray,
-                      letterSpacing: 1.2, // Standard letter spacing
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: AppSizes.paddingMedium(context),
+              horizontal: AppSizes.paddingSmall(context),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  card.icon,
+                  size: AppSizes.iconXLarge(context),
+                  color: card.isEnabled ? AppColors.primaryTeal : AppColors.darkGray,
+                ),
+                SizedBox(height: AppSizes.paddingMedium(context)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        card.title,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: AppSizes.fontMedium(context),
+                          fontWeight: FontWeight.w600,
+                          color: card.isEnabled ? AppColors.textDark : AppColors.darkGray,
+                          letterSpacing: 1.2, // Standard letter spacing
+                        ),
+                      ),
                     ),
-                  ),
-                  SizedBox(width: AppSizes.paddingSmall(context)),
-                  Icon(
-                    Icons.square_outlined,
-                    size: AppSizes.iconSmall(context),
-                    color: card.isEnabled ? AppColors.primaryTeal : AppColors.darkGray,
-                  ),
-                ],
-              ),
-            ],
+                    SizedBox(width: AppSizes.paddingSmall(context)),
+                    Icon(
+                      Icons.square_outlined,
+                      size: AppSizes.iconSmall(context),
+                      color: card.isEnabled ? AppColors.primaryTeal : AppColors.darkGray,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -43,8 +43,7 @@ class CustomBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final bottomSheetHeight = height ?? screenHeight * 0.6;
+    final bottomSheetHeight = height ?? AppSizes.screenHeight(context) * 0.6;
     return Container(
       height: bottomSheetHeight,
       decoration: BoxDecoration(
