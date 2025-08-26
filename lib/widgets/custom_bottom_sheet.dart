@@ -47,11 +47,11 @@ class CustomBottomSheet extends StatelessWidget {
     final bottomSheetHeight = height ?? screenHeight * 0.6;
     return Container(
       height: bottomSheetHeight,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(AppSizes.radiusLarge),
-          topRight: Radius.circular(AppSizes.radiusLarge),
+          topLeft: Radius.circular(AppSizes.radiusLarge(context)),
+          topRight: Radius.circular(AppSizes.radiusLarge(context)),
         ),
       ),
       child: Column(
@@ -59,7 +59,7 @@ class CustomBottomSheet extends StatelessWidget {
           // Drag handle
           if (enableDrag)
             Container(
-              margin: const EdgeInsets.only(top: AppSizes.paddingMedium),
+              margin: EdgeInsets.only(top: AppSizes.paddingMedium(context)),
               decoration: BoxDecoration(
                 color: AppColors.lightGray,
               ),
@@ -68,11 +68,11 @@ class CustomBottomSheet extends StatelessWidget {
           // Title
           if (title != null)
             Padding(
-              padding: const EdgeInsets.all(AppSizes.paddingLarge),
+              padding: EdgeInsets.all(AppSizes.paddingLarge(context)),
               child: Text(
                 title!,
                 style: TextStyle(
-                  fontSize: AppSizes.fontXXLarge,
+                  fontSize: AppSizes.font(context, SizeCategory.xxlarge),
                   fontWeight: FontWeight.bold,
                   color: AppColors.darkTeal,
                 ),
@@ -82,8 +82,8 @@ class CustomBottomSheet extends StatelessWidget {
           // Content
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSizes.paddingLarge,
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSizes.paddingLarge(context),
               ),
               child: child,
             ),

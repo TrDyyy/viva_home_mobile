@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import '../utils/validation.dart';
 import '../utils/custom_text_field.dart';
-import '../widgets/custom_button.dart';
+import '../utils/custom_button.dart';
 import '../pages/home_page.dart';
 
 class LoginForm extends StatefulWidget {
@@ -20,20 +20,20 @@ class _LoginFormState extends State<LoginForm> {
   bool _obscurePassword = true;
   final _passwordFocusNode = FocusNode();
 
-  // Common widgets
-  Widget get _mediumSpacing => const SizedBox(height: AppSizes.paddingMedium);
-  Widget get _largeSpacing => const SizedBox(height: AppSizes.paddingLarge);
-  Widget get _smallSpacing => const SizedBox(height: AppSizes.paddingSmall);
+  // Common widgets - now context-dependent
+  Widget _mediumSpacing(BuildContext context) => SizedBox(height: AppSizes.paddingMedium(context));
+  Widget _largeSpacing(BuildContext context) => SizedBox(height: AppSizes.paddingLarge(context));
+  Widget _smallSpacing(BuildContext context) => SizedBox(height: AppSizes.paddingSmall(context));
 
-  TextStyle get _grayTextStyle => const TextStyle(
+  TextStyle _grayTextStyle(BuildContext context) => TextStyle(
     color: AppColors.darkGray,
-    fontSize: AppSizes.fontMedium,
+    fontSize: AppSizes.fontMedium(context),
   );
 
-  TextStyle get _smallGrayTextStyle => const TextStyle(
+  TextStyle _smallGrayTextStyle(BuildContext context) => TextStyle(
     color: AppColors.darkGray,
-    fontSize: AppSizes.fontSmall,
-    height: 1.4,
+    fontSize: AppSizes.fontSmall(context),
+    height: 1.4, // Standard text height multiplier
   );
 
   @override
@@ -83,7 +83,7 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _mediumSpacing,
+              _mediumSpacing(context),
 
               // Email field
               CustomTextField(
@@ -97,7 +97,7 @@ class _LoginFormState extends State<LoginForm> {
                 },
               ),
 
-              _mediumSpacing,
+              _mediumSpacing(context),
 
               // Password field
               CustomTextField(
@@ -124,7 +124,7 @@ class _LoginFormState extends State<LoginForm> {
                 prefixIcon: null,
               ),
 
-              _smallSpacing,
+              _smallSpacing(context),
 
               // Forgot password
               Align(
@@ -135,48 +135,48 @@ class _LoginFormState extends State<LoginForm> {
                   },
                   child: Text(
                     AppStrings.forgotPassword,
-                    style: _grayTextStyle,
+                    style: _grayTextStyle(context),
                   ),
                 ),
               ),
 
-              _smallSpacing,
+              _smallSpacing(context),
 
               // Connect surveyor text
               Text(
                 AppStrings.connectSurveyor,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.darkTeal,
-                  fontSize: AppSizes.fontMedium,
+                  fontSize: AppSizes.fontMedium(context),
                 ),
               ),
 
-              _largeSpacing,
+              _largeSpacing(context),
 
               // Login button
               CustomButton(
-                buttonKey: "loginpage",
                 text: AppStrings.loginButton,
+                style: CustomButtonStyle.secondary,
                 isLoading: _isLoading,
                 onPressed: _isLoading ? null : _handleLogin,
               ),
 
-              _largeSpacing,
+              _largeSpacing(context),
 
               // Terms and conditions
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSizes.paddingMedium,
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSizes.paddingMedium(context),
                 ),
                 child: Text(
                   AppStrings.agreeToTerms,
                   textAlign: TextAlign.center,
-                  style: _smallGrayTextStyle,
+                  style: _smallGrayTextStyle(context),
                 ),
               ),
 
-              _largeSpacing,
+              _largeSpacing(context),
             ],
           ),
         ),

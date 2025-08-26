@@ -44,8 +44,8 @@ class _SplashPageState extends State<SplashPage> {
             children: [
               Center(
                 child: Container(
-                  width: 200,
-                  height: 120,
+                  width: AppSizes.padding(context, SizeCategory.xxxlarge) * 4, // ~192 responsive
+                  height: AppSizes.padding(context, SizeCategory.xxxlarge) * 2.5, // ~120 responsive
                   decoration: const BoxDecoration(
                     shape: BoxShape.rectangle,
                     image: DecorationImage(
@@ -55,8 +55,8 @@ class _SplashPageState extends State<SplashPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: AppSizes.paddingXLarge),
-              const CircularProgressIndicator(
+              SizedBox(height: AppSizes.paddingXLarge(context)),
+              CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
               ),
             ],
