@@ -60,11 +60,8 @@ class CustomBottomSheet extends StatelessWidget {
           if (enableDrag)
             Container(
               margin: const EdgeInsets.only(top: AppSizes.paddingMedium),
-              width: 40,
-              height: 4,
               decoration: BoxDecoration(
                 color: AppColors.lightGray,
-                borderRadius: BorderRadius.circular(2),
               ),
             ),
           

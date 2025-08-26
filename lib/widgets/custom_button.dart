@@ -47,67 +47,41 @@ class CustomButton extends StatelessWidget {
   }
 
   ButtonStyle _baseButtonStyle({
-    required Color normalBg,
-    required Color pressedBg,
-    required Color normalFg,
-    required Color pressedFg,
-    BorderSide? pressedBorder,
+    required Color backgroundColor,
+    required Color textColor,
+    BorderSide? borderSide,
     double elevation = 0,
   }) {
     return ElevatedButton.styleFrom(
-      backgroundColor: normalBg,
-      foregroundColor: normalFg,
+      backgroundColor: backgroundColor,
+      foregroundColor: textColor,
       elevation: elevation,
+      side: borderSide,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
       ),
-    ).copyWith(
-      backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-        if (states.contains(WidgetState.pressed)) return pressedBg;
-        return normalBg;
-      }),
-      foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-        if (states.contains(WidgetState.pressed)) return pressedFg;
-        return normalFg;
-      }),
-      side: WidgetStateProperty.resolveWith<BorderSide>((states) {
-        if (states.contains(WidgetState.pressed)) {
-          return pressedBorder ?? BorderSide.none;
-        }
-        return BorderSide.none;
-      }),
     );
   }
 
   ButtonStyle _welcomePageStyle() {
     return _baseButtonStyle(
-      normalBg: AppColors.white,
-      pressedBg: Colors.transparent,
-      normalFg: AppColors.darkTeal,
-      pressedFg: AppColors.white,
-      pressedBorder: const BorderSide(color: AppColors.white, width: 2.0),
+      backgroundColor: AppColors.white,
+      textColor: AppColors.darkTeal,
     );
   }
 
   ButtonStyle _loginPageStyle() {
     return _baseButtonStyle(
-      normalBg: AppColors.darkTeal,
-      pressedBg: AppColors.lightGray,
-      normalFg: AppColors.white,
-      pressedFg: AppColors.darkTeal,
-      pressedBorder: const BorderSide(color: AppColors.darkTeal, width: 2.0),
+      backgroundColor: AppColors.darkTeal,
+      textColor: AppColors.white,
       elevation: 2,
     );
   }
 
   ButtonStyle _defaultStyle() {
-    return ElevatedButton.styleFrom(
+    return _baseButtonStyle(
       backgroundColor: AppColors.white,
-      foregroundColor: AppColors.textDark,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
-      ),
+      textColor: AppColors.textDark,
     );
   }
 

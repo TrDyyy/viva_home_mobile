@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/constants.dart';
+import 'constants.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hintText;
@@ -10,6 +10,9 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final bool enabled;
+  final TextInputAction textInputAction;
+  final void Function(String)? onFieldSubmitted;
+  final FocusNode? focusNode;
 
   const CustomTextField({
     super.key,
@@ -21,6 +24,9 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.prefixIcon,
     this.enabled = true,
+    this.textInputAction = TextInputAction.done,
+    this.onFieldSubmitted,
+    this.focusNode,
   });
 
   @override
@@ -31,6 +37,9 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       enabled: enabled,
+      textInputAction: textInputAction,
+      onFieldSubmitted: onFieldSubmitted,
+      focusNode: focusNode,
       style: const TextStyle(
         fontSize: AppSizes.fontMedium,
         color: AppColors.textDark,
