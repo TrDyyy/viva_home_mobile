@@ -21,7 +21,9 @@ class _WelcomePageState extends State<WelcomePage> {
       logoHeight: AppSizes.padding(context, SizeCategory.xxxlarge) * 4,
       child: Column(
         children: [
-          SizedBox(height: AppSizes.padding(context, SizeCategory.xxxlarge) * 10),
+          SizedBox(
+            height: AppSizes.padding(context, SizeCategory.xxxlarge) * 10,
+          ),
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: AppSizes.padding(context, SizeCategory.xlarge),
@@ -32,7 +34,12 @@ class _WelcomePageState extends State<WelcomePage> {
                 Expanded(
                   child: CustomButton(
                     text: AppStrings.joinButton,
-                    style: CustomButtonStyle.secondary,
+                    height:
+                        AppSizes.padding(context, SizeCategory.xlarge) * 1.8,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.white,
+                      foregroundColor: AppColors.darkTeal,
+                    ),
                     onPressed: () {
                       // Navigate to join page (later)
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -41,11 +48,17 @@ class _WelcomePageState extends State<WelcomePage> {
                     },
                   ),
                 ),
-                SizedBox(width: AppSizes.paddingLarge(context)),
+                SizedBox(width: AppSizes.padding(context, SizeCategory.large)),
                 Expanded(
                   child: CustomButton(
                     text: AppStrings.loginButton,
-                    style: CustomButtonStyle.primary,
+                    borderColor: AppColors.white,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.transparent,
+                      foregroundColor: AppColors.white,
+                    ),
+                    height:
+                        AppSizes.padding(context, SizeCategory.xlarge) * 1.8,
                     onPressed: () {
                       CustomBottomSheet.show(
                         context: context,
@@ -58,7 +71,7 @@ class _WelcomePageState extends State<WelcomePage> {
               ],
             ),
           ),
-          SizedBox(height: AppSizes.paddingMedium(context)),
+          SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
           // Terms and privacy
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -69,7 +82,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   AppStrings.privacyPolicy,
                   style: TextStyle(
                     color: AppColors.white,
-                    fontSize: AppSizes.fontMedium(context),
+                    fontSize: AppSizes.font(context, SizeCategory.medium),
                   ),
                 ),
               ),
@@ -79,7 +92,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   AppStrings.termsConditions,
                   style: TextStyle(
                     color: AppColors.white,
-                    fontSize: AppSizes.fontMedium(context),
+                    fontSize: AppSizes.font(context, SizeCategory.medium),
                   ),
                 ),
               ),

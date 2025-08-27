@@ -26,7 +26,7 @@ class _DetailsPageState extends State<DetailsPage> {
             icon: Icons.key_outlined,
             title: AppStrings.generalDetails,
             isEnabled: true,
-            borders: ["right", "bottom"],
+            borders: {BorderEdge.right, BorderEdge.bottom},
             onTap: () {
               // Navigate to general details
             },
@@ -35,7 +35,7 @@ class _DetailsPageState extends State<DetailsPage> {
             icon: Icons.home_outlined,
             title: AppStrings.externalDetails,
             isEnabled: true,
-            borders: ["bottom"],
+            borders: {BorderEdge.bottom},
             onTap: () {
               // Navigate to external details
             },
@@ -44,7 +44,7 @@ class _DetailsPageState extends State<DetailsPage> {
             icon: Icons.meeting_room_outlined,
             title: AppStrings.internalDetails,
             isEnabled: true,
-            borders: ["right", "bottom"],
+            borders: {BorderEdge.right, BorderEdge.bottom},
             onTap: () {
               // Navigate to internal details
             },
@@ -53,7 +53,7 @@ class _DetailsPageState extends State<DetailsPage> {
             icon: Icons.build_outlined,
             title: AppStrings.servicesDetails,
             isEnabled: true,
-            borders: ["bottom"],
+            borders: {BorderEdge.bottom},
             onTap: () {
               // Navigate to services
             },
@@ -62,7 +62,7 @@ class _DetailsPageState extends State<DetailsPage> {
             icon: Icons.add_box_outlined,
             title: AppStrings.additionalDetails,
             isEnabled: true,
-            borders: [],
+            borders: {}, 
             onTap: () {
               // Navigate to additional details
             },

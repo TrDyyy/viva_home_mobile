@@ -36,7 +36,7 @@ class _SplashPageState extends State<SplashPage> {
       logoHeight: AppSizes.padding(context, SizeCategory.xxxlarge) * 2.5,
       child: Column(
         children: [
-          SizedBox(height: AppSizes.paddingXLarge(context)),
+          SizedBox(height: AppSizes.padding(context, SizeCategory.xlarge)),
           CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
           ),

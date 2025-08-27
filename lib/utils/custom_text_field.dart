@@ -41,7 +41,7 @@ class CustomTextField extends StatelessWidget {
       onFieldSubmitted: onFieldSubmitted,
       focusNode: focusNode,
       style: TextStyle(
-        fontSize: AppSizes.fontMedium(context),
+        fontSize: AppSizes.font(context, SizeCategory.medium),
         color: AppColors.textDark,
         fontWeight: FontWeight.w400,
       ),
@@ -49,7 +49,7 @@ class CustomTextField extends StatelessWidget {
         labelText: hintText,
         hintText: hintText,
         hintStyle: TextStyle(
-          fontSize: AppSizes.fontMedium(context),
+          fontSize: AppSizes.font(context, SizeCategory.medium),
           color: AppColors.darkGray,
           fontWeight: FontWeight.w400,
         ),
@@ -62,34 +62,29 @@ class CustomTextField extends StatelessWidget {
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: AppColors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMedium(context)),
-          borderSide: const BorderSide(color: AppColors.lightGray, width: 1.0),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMedium(context)),
-          borderSide: const BorderSide(color: AppColors.lightGray, width: 1.0),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMedium(context)),
-          borderSide: const BorderSide(
-            color: AppColors.primaryTeal,
-            width: 2.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMedium(context)),
-          borderSide: const BorderSide(color: Colors.red, width: 1.0),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMedium(context)),
-          borderSide: const BorderSide(color: Colors.red, width: 2.0),
-        ),
+        border: _buildBorder(context, AppColors.lightGray, 1),
+        enabledBorder: _buildBorder(context, AppColors.lightGray, 1),
+        focusedBorder: _buildBorder(context, AppColors.primaryTeal, 2),
+        errorBorder: _buildBorder(context, AppColors.error, 1),
+        focusedErrorBorder: _buildBorder(context, AppColors.error, 2),
         contentPadding: EdgeInsets.symmetric(
-          horizontal: AppSizes.paddingMedium(context),
-          vertical: AppSizes.paddingLarge(context) * 0.75,
+          horizontal: AppSizes.padding(context, SizeCategory.medium),
+          vertical: AppSizes.padding(context, SizeCategory.large) * 0.75,
         ),
       ),
+    );
+  }
+
+  OutlineInputBorder _buildBorder(
+    BuildContext context,
+    Color color,
+    double width,
+  ) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        AppSizes.radius(context, SizeCategory.medium),
+      ),
+      borderSide: BorderSide(color: color, width: width),
     );
   }
 }

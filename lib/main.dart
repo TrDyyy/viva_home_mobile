@@ -16,15 +16,9 @@ class MyApp extends StatelessWidget {
       title: AppStrings.appName,
       theme: ThemeData(
         textTheme: GoogleFonts.mulishTextTheme(),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primaryTeal,
-          primary: AppColors.primaryTeal,
-          secondary: AppColors.lightTeal,
-        ),
-        useMaterial3: true,
         appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.primaryTeal,
-          foregroundColor: AppColors.white,
+          backgroundColor: AppColors.lightGray,
+          foregroundColor: AppColors.textDark,
           elevation: 0,
         ),
       ),

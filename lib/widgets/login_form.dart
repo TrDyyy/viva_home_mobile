@@ -20,22 +20,6 @@ class _LoginFormState extends State<LoginForm> {
   bool _obscurePassword = true;
   final _passwordFocusNode = FocusNode();
 
-  // Common widgets - now context-dependent
-  Widget _mediumSpacing(BuildContext context) => SizedBox(height: AppSizes.paddingMedium(context));
-  Widget _largeSpacing(BuildContext context) => SizedBox(height: AppSizes.paddingLarge(context));
-  Widget _smallSpacing(BuildContext context) => SizedBox(height: AppSizes.paddingSmall(context));
-
-  TextStyle _grayTextStyle(BuildContext context) => TextStyle(
-    color: AppColors.darkGray,
-    fontSize: AppSizes.fontMedium(context),
-  );
-
-  TextStyle _smallGrayTextStyle(BuildContext context) => TextStyle(
-    color: AppColors.darkGray,
-    fontSize: AppSizes.fontSmall(context),
-    height: 1.4, // Standard text height multiplier
-  );
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -83,7 +67,7 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _mediumSpacing(context),
+              SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
 
               // Email field
               CustomTextField(
@@ -97,7 +81,7 @@ class _LoginFormState extends State<LoginForm> {
                 },
               ),
 
-              _mediumSpacing(context),
+              SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
 
               // Password field
               CustomTextField(
@@ -124,23 +108,25 @@ class _LoginFormState extends State<LoginForm> {
                 prefixIcon: null,
               ),
 
-              _smallSpacing(context),
+              SizedBox(height: AppSizes.padding(context, SizeCategory.small)),
 
               // Forgot password
-              Align(
-                alignment: Alignment.center,
+              Center(
                 child: TextButton(
                   onPressed: () {
                     // Handle forgot password
                   },
                   child: Text(
                     AppStrings.forgotPassword,
-                    style: _grayTextStyle(context),
+                    style: TextStyle(
+                      color: AppColors.darkGray,
+                      fontSize: AppSizes.font(context, SizeCategory.small),
+                    ),
                   ),
                 ),
               ),
 
-              _smallSpacing(context),
+              SizedBox(height: AppSizes.padding(context, SizeCategory.small)),
 
               // Connect surveyor text
               Text(
@@ -148,35 +134,42 @@ class _LoginFormState extends State<LoginForm> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.darkTeal,
-                  fontSize: AppSizes.fontMedium(context),
+                  fontSize: AppSizes.font(context, SizeCategory.medium),
                 ),
               ),
 
-              _largeSpacing(context),
+              SizedBox(height: AppSizes.padding(context, SizeCategory.large)),
 
               // Login button
               CustomButton(
                 text: AppStrings.loginButton,
-                style: CustomButtonStyle.secondary,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.darkTeal,
+                  foregroundColor: AppColors.white,
+                ),
                 isLoading: _isLoading,
                 onPressed: _isLoading ? null : _handleLogin,
               ),
 
-              _largeSpacing(context),
+              SizedBox(height: AppSizes.padding(context, SizeCategory.large)),
 
               // Terms and conditions
               Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: AppSizes.paddingMedium(context),
+                  horizontal: AppSizes.padding(context, SizeCategory.medium),
                 ),
                 child: Text(
                   AppStrings.agreeToTerms,
                   textAlign: TextAlign.center,
-                  style: _smallGrayTextStyle(context),
+                  style: TextStyle(
+                    color: AppColors.darkGray,
+                    fontSize: AppSizes.font(context, SizeCategory.small),
+                    height: 1.4,
+                  ),
                 ),
               ),
 
-              _largeSpacing(context),
+              SizedBox(height: AppSizes.padding(context, SizeCategory.large)),
             ],
           ),
         ),

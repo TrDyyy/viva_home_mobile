@@ -23,7 +23,7 @@ class BaseLogoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final defaultPadding = EdgeInsets.symmetric(
-      horizontal: AppSizes.paddingLarge(context),
+      horizontal: AppSizes.padding(context, SizeCategory.large),
     );
     
     final logoContainer = Hero(
@@ -45,7 +45,7 @@ class BaseLogoPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(height: AppSizes.paddingXLarge(context)),
+        SizedBox(height: AppSizes.padding(context, SizeCategory.xlarge)),
         Center(child: logoContainer),
         child,
       ],

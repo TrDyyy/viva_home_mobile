@@ -49,8 +49,8 @@ class CustomBottomSheet extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(AppSizes.radiusLarge(context)),
-          topRight: Radius.circular(AppSizes.radiusLarge(context)),
+          topLeft: Radius.circular(AppSizes.radius(context, SizeCategory.large)),
+          topRight: Radius.circular(AppSizes.radius(context, SizeCategory.large)),
         ),
       ),
       child: Column(
@@ -58,7 +58,7 @@ class CustomBottomSheet extends StatelessWidget {
           // Drag handle
           if (enableDrag)
             Container(
-              margin: EdgeInsets.only(top: AppSizes.paddingMedium(context)),
+              margin: EdgeInsets.only(top: AppSizes.padding(context, SizeCategory.medium)),
               decoration: BoxDecoration(
                 color: AppColors.lightGray,
               ),
@@ -67,12 +67,12 @@ class CustomBottomSheet extends StatelessWidget {
           // Title
           if (title != null)
             Padding(
-              padding: EdgeInsets.all(AppSizes.paddingLarge(context)),
+              padding: EdgeInsets.all(AppSizes.padding(context, SizeCategory.large)),
               child: Text(
                 title!,
                 style: TextStyle(
-                  fontSize: AppSizes.font(context, SizeCategory.xxlarge),
-                  fontWeight: FontWeight.bold,
+                  fontSize: AppSizes.font(context, SizeCategory.xxxlarge),
+                  fontWeight: FontWeight.w900,
                   color: AppColors.darkTeal,
                 ),
               ),
@@ -82,7 +82,7 @@ class CustomBottomSheet extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: AppSizes.paddingLarge(context),
+                horizontal: AppSizes.padding(context, SizeCategory.large),
               ),
               child: child,
             ),

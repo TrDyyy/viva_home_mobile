@@ -9,6 +9,8 @@ class AppColors {
   static const Color darkGray = Color(0xFF757575);
   static const Color textDark = Color(0xFF2C3E50);
   static const Color accent = Color(0xFF34495E);
+  static const Color transparent = Colors.transparent;
+  static const Color error = Color(0xFFFF3D00);
 }
 
 class AppStrings {
@@ -78,7 +80,7 @@ class AppSizes {
     SizeType.radius: 4.0,
     SizeType.font: 14.0,
     SizeType.icon: 16.0,
-    SizeType.container: 48.0, // Base height for containers
+    SizeType.container: 48.0, 
   };
   
   /// Size multipliers configuration for each category
@@ -271,13 +273,6 @@ class AppSizes {
     return finalSize;
   }
   
-  /// Static fallback calculation for when BuildContext is unavailable
-  static double _staticScale(SizeType sizeType, SizeCategory category) {
-    final baseValue = _baseValues[sizeType]!;
-    final categoryMultiplier = _sizeMultipliers[category]![sizeType]!;
-    return baseValue * categoryMultiplier;
-  }
-  
   // ==================== PUBLIC GENERIC METHODS ====================
   
   /// Returns responsive padding based on size category
@@ -316,18 +311,6 @@ class AppSizes {
     tabletBreakpoint: tabletBreakpoint,
   );
   
-  /// Returns static padding value for when BuildContext is unavailable
-  static double paddingStatic(SizeCategory category) => 
-    _staticScale(SizeType.padding, category);
-  
-  /// Returns static border radius value for when BuildContext is unavailable
-  static double radiusStatic(SizeCategory category) => 
-    _staticScale(SizeType.radius, category);
-  
-  /// Returns static font size value for when BuildContext is unavailable
-  static double fontStatic(SizeCategory category) => 
-    _staticScale(SizeType.font, category);
-  
   /// Returns responsive icon size based on size category
   static double icon(BuildContext context, SizeCategory category, {
     double mobileBreakpoint = _defaultMobileBreakpoint,
@@ -351,215 +334,4 @@ class AppSizes {
     mobileBreakpoint: mobileBreakpoint,
     tabletBreakpoint: tabletBreakpoint,
   );
-  
-  /// Returns static icon size value for when BuildContext is unavailable
-  static double iconStatic(SizeCategory category) => 
-    _staticScale(SizeType.icon, category);
-  
-  /// Returns static container height value for when BuildContext is unavailable
-  static double containerStatic(SizeCategory category) => 
-    _staticScale(SizeType.container, category);
-  
-  // ==================== LEGACY COMPATIBILITY METHODS ====================
-  // These methods maintain backward compatibility with existing code
-  
-  // Padding methods
-  static double paddingSmall(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => padding(context, SizeCategory.small,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double paddingMedium(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => padding(context, SizeCategory.medium,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double paddingLarge(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => padding(context, SizeCategory.large,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double paddingXLarge(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => padding(context, SizeCategory.xlarge,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  // Radius methods
-  static double radiusSmall(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => radius(context, SizeCategory.small,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double radiusMedium(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => radius(context, SizeCategory.medium,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double radiusLarge(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => radius(context, SizeCategory.large,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double radiusXLarge(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => radius(context, SizeCategory.xlarge,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  // Font methods
-  static double fontSmall(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => font(context, SizeCategory.small,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double fontMedium(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => font(context, SizeCategory.medium,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double fontLarge(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => font(context, SizeCategory.large,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double fontXLarge(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => font(context, SizeCategory.xlarge,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  // Icon methods
-  static double iconSmall(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => icon(context, SizeCategory.small,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double iconMedium(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => icon(context, SizeCategory.medium,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double iconLarge(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => icon(context, SizeCategory.large,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  static double iconXLarge(BuildContext context, {
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) => icon(context, SizeCategory.xlarge,
-         mobileBreakpoint: mobileBreakpoint, tabletBreakpoint: tabletBreakpoint);
-  
-  // ==================== LEGACY STATIC GETTERS ====================
-  
-  // Padding static getters
-  static double get paddingSmallStatic => paddingStatic(SizeCategory.small);
-  static double get paddingMediumStatic => paddingStatic(SizeCategory.medium);
-  static double get paddingLargeStatic => paddingStatic(SizeCategory.large);
-  static double get paddingXLargeStatic => paddingStatic(SizeCategory.xlarge);
-  
-  // Radius static getters
-  static double get radiusSmallStatic => radiusStatic(SizeCategory.small);
-  static double get radiusMediumStatic => radiusStatic(SizeCategory.medium);
-  static double get radiusLargeStatic => radiusStatic(SizeCategory.large);
-  static double get radiusXLargeStatic => radiusStatic(SizeCategory.xlarge);
-  
-  // Font static getters
-  static double get fontSmallStatic => fontStatic(SizeCategory.small);
-  static double get fontMediumStatic => fontStatic(SizeCategory.medium);
-  static double get fontLargeStatic => fontStatic(SizeCategory.large);
-  static double get fontXLargeStatic => fontStatic(SizeCategory.xlarge);
-  static double get fontXXLargeStatic => fontStatic(SizeCategory.xxlarge);
-  static double get fontXXXLargeStatic => fontStatic(SizeCategory.xxxlarge);
-  
-  // ==================== UTILITY METHODS ====================
-  
-  /// Returns EdgeInsets with responsive padding on all sides
-  /// 
-  /// Convenience method for common padding scenarios.
-  static EdgeInsets responsivePadding(BuildContext context, {
-    SizeCategory category = SizeCategory.medium,
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) {
-    return EdgeInsets.all(padding(context, category, 
-      mobileBreakpoint: mobileBreakpoint,
-      tabletBreakpoint: tabletBreakpoint,
-    ));
-  }
-  
-  /// Returns EdgeInsets with responsive horizontal padding
-  /// 
-  /// Useful for content that needs side padding but not top/bottom.
-  static EdgeInsets responsiveHorizontalPadding(BuildContext context, {
-    SizeCategory category = SizeCategory.medium,
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) {
-    return EdgeInsets.symmetric(horizontal: padding(context, category,
-      mobileBreakpoint: mobileBreakpoint,
-      tabletBreakpoint: tabletBreakpoint,
-    ));
-  }
-  
-  /// Returns EdgeInsets with responsive vertical padding
-  /// 
-  /// Useful for content that needs top/bottom padding but not sides.
-  static EdgeInsets responsiveVerticalPadding(BuildContext context, {
-    SizeCategory category = SizeCategory.medium,
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) {
-    return EdgeInsets.symmetric(vertical: padding(context, category,
-      mobileBreakpoint: mobileBreakpoint,
-      tabletBreakpoint: tabletBreakpoint,
-    ));
-  }
-  
-  /// Returns BorderRadius with responsive radius
-  /// 
-  /// Convenience method for creating rounded corners.
-  static BorderRadius responsiveBorderRadius(BuildContext context, {
-    SizeCategory category = SizeCategory.medium,
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) {
-    return BorderRadius.circular(radius(context, category,
-      mobileBreakpoint: mobileBreakpoint,
-      tabletBreakpoint: tabletBreakpoint,
-    ));
-  }
-  
-  /// Returns TextStyle with responsive font size
-  /// 
-  /// Convenience method for creating text styles.
-  static TextStyle responsiveTextStyle(BuildContext context, {
-    SizeCategory category = SizeCategory.medium,
-    Color? color,
-    FontWeight? fontWeight,
-    double mobileBreakpoint = _defaultMobileBreakpoint,
-    double tabletBreakpoint = _defaultTabletBreakpoint,
-  }) {
-    return TextStyle(
-      fontSize: font(context, category,
-        mobileBreakpoint: mobileBreakpoint,
-        tabletBreakpoint: tabletBreakpoint,
-      ),
-      color: color,
-      fontWeight: fontWeight,
-    );
-  }
 }
