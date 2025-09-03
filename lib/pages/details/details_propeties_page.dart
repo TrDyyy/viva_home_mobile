@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:viva_home_mobile/pages/details/general/general_page.dart';
+import 'package:viva_home_mobile/pages/details/tree_page.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
 import 'package:viva_home_mobile/widgets/base_page_widget.dart';
 
@@ -29,6 +31,9 @@ class _DetailsPageState extends State<DetailsPage> {
             borders: {BorderEdge.right, BorderEdge.bottom},
             onTap: () {
               // Navigate to general details
+              Navigator.push(context, MaterialPageRoute(
+                builder: (context) => GeneralPage(username: widget.username),
+              ));
             },
           ),
           CardItemConfig(

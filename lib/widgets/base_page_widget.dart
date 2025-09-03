@@ -7,6 +7,8 @@ enum BorderEdge { top, right, bottom, left }
 
 enum CardLayoutType { grid, list }
 
+enum ContentType { container, modal }
+
 class CardItemConfig {
   final IconData icon;
   final String title;
@@ -31,6 +33,8 @@ class PageConfig {
   final bool useGridLayout; // true = 2-column grid, false = vertical list
   final String? actionButtonText;
   final VoidCallback? actionButtonOnPressed;
+  final ContentType contentType;
+  final List<ModalSection>? modalSections; // For modal content
 
   const PageConfig({
     required this.title,
@@ -39,6 +43,29 @@ class PageConfig {
     this.useGridLayout = false,
     this.actionButtonText,
     this.actionButtonOnPressed,
+    this.contentType = ContentType.container,
+    this.modalSections,
+  });
+}
+
+class SectionItem {
+  final String text;
+  final bool isChecked;
+
+  SectionItem({required this.text, this.isChecked = false});
+}
+
+class ModalSection {
+  final String title;
+  final String subtitle;
+  final List<SectionItem> items;
+  final VoidCallback? onActionPressed;
+
+  ModalSection({
+    required this.title,
+    required this.subtitle,
+    required this.items,
+    this.onActionPressed,
   });
 }
 
@@ -67,7 +94,30 @@ class BasePageWidget extends StatelessWidget {
               _buildHeader(context),
 
               // Content area
-              Expanded(child: _buildContentContainer(context)),
+              Expanded(
+                child: switch (config.contentType) {
+                  ContentType.container => _buildContentContainer(context),
+                  ContentType.modal => Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(child: _buildContentModal(context)),
+                      if (config.actionButtonText != null &&
+                          config.actionButtonOnPressed != null)
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: AppSizes.padding(
+                                context,
+                                SizeCategory.xxlarge,
+                              ),
+                            ),
+                            child: _buildActionButton(context),
+                          ),
+                        ),
+                    ],
+                  ),
+                },
+              ),
             ],
           ),
         ),
@@ -212,6 +262,186 @@ class BasePageWidget extends StatelessWidget {
     );
   }
 
+  Widget _buildContentModal(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(
+        left: AppSizes.padding(context, SizeCategory.medium),
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(
+            AppSizes.radius(context, SizeCategory.xlarge),
+          ),
+          bottomLeft: Radius.circular(
+            AppSizes.radius(context, SizeCategory.xlarge),
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black,
+            blurRadius:
+                AppSizes.padding(context, SizeCategory.medium) *
+                0.625, // ~10 responsive
+            offset: const Offset(0, -3),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: AppSizes.padding(context, SizeCategory.large),
+          top: AppSizes.padding(context, SizeCategory.xxlarge),
+        ),
+        child: Column(
+          children: [
+            // Drag indicator
+            Container(
+              width:
+                  AppSizes.padding(context, SizeCategory.large) *
+                  1.6, // ~38 responsive
+              height:
+                  AppSizes.padding(context, SizeCategory.small) *
+                  0.5, // ~4 responsive
+              margin: EdgeInsets.only(
+                bottom: AppSizes.padding(context, SizeCategory.large),
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.lightGray,
+                borderRadius: BorderRadius.circular(
+                  AppSizes.radius(context, SizeCategory.small) * 0.5,
+                ),
+              ),
+            ),
+
+            // Cards content with action button
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSizes.padding(context, SizeCategory.medium),
+                ),
+                child: Column(
+                  children: [
+                    if (config.modalSections != null)
+                      ...config.modalSections!.map(
+                        (section) => Padding(
+                          padding: EdgeInsets.only(
+                            bottom: AppSizes.padding(
+                              context,
+                              SizeCategory.medium,
+                            ),
+                          ),
+                          child: _buildCompletedSection(
+                            context: context,
+                            title: section.title,
+                            subtitle: section.subtitle,
+                            items: section.items,
+                            onActionPressed: section.onActionPressed,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompletedSection({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required List<SectionItem> items,
+    VoidCallback? onActionPressed,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header với title, subtitle và nút action (mũi tên)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    subtitle.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryTeal,
+                    ),
+                  ),
+                  Text(
+                    title.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textDark,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (onActionPressed != null)
+            InkWell(
+              onTap: onActionPressed,
+              child: Container(
+                padding: EdgeInsets.all(AppSizes.padding(context, SizeCategory.small)),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryTeal, 
+                  border: Border(
+                    left: BorderSide(color: AppColors.darkGray, width: 2),
+                  ),
+                ),
+                child: Icon(
+                  Icons.arrow_forward,
+                  color: AppColors.darkTeal,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // List items
+        ...items.map(
+          (item) => Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  item.text,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Icon(
+                  item.isChecked
+                      ? Icons.check_box
+                      : Icons.check_box_outline_blank,
+                  color: item.isChecked ? Colors.teal : Colors.grey,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildGridLayout(BuildContext context) {
     return Wrap(
       alignment: WrapAlignment.center,
@@ -239,7 +469,9 @@ class BasePageWidget extends StatelessWidget {
     }
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: AppSizes.padding(context, SizeCategory.large)),
+      padding: EdgeInsets.symmetric(
+        vertical: AppSizes.padding(context, SizeCategory.large),
+      ),
       child: CustomButton(
         text: config.actionButtonText!,
         style: ElevatedButton.styleFrom(
