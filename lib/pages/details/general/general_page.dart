@@ -14,36 +14,36 @@ class GeneralPage extends StatefulWidget {
 class _GeneralPageState extends State<GeneralPage> {
   @override
   Widget build(BuildContext context) {
-    return BasePageWidget(config: PageConfig(
-      title: 'General Details',
-      username: widget.username,
-      useGridLayout: false,
-      actionButtonText: AppStrings.backButton,
-      actionButtonOnPressed: () => Navigator.pop(context), 
-      contentType: ContentType.modal,
-      cards: [],
-      modalSections: [
+    return BasePageWidget(
+      config: PageConfig(
+        title: 'PROPERTY DETAILS',
+        username: widget.username,
+        useGridLayout: false,
+        actionButtonText: AppStrings.backButton,
+        actionButtonOnPressed: () => Navigator.pop(context),
+        contentType: ContentType.modal,
+        cards: [],
+        modalSections: [
           ModalSection(
-      title: 'General Details',
-      subtitle: 'Completed',
-      items: [
-        SectionItem(text: 'Personal Information', isChecked: true),
-        SectionItem(text: 'Contact Details', isChecked: false),
-        SectionItem(text: 'Address', isChecked: true),
-      ],
-      onActionPressed: () {
-        // Handle arrow button tap
-      },
-    ),
-    ModalSection(
-      title: 'Additional Info',
-      subtitle: 'In Progress',
-      items: [
-        SectionItem(text: 'Documents', isChecked: false),
-        SectionItem(text: 'Verification', isChecked: false),
-      ],
-    ),
-      ]
-    ));
+            title: 'General',
+            subtitle: 'Completed',
+            items: [
+              SectionItem(text: 'Intent of valuation', isChecked: true),
+              SectionItem(text: 'Homeowner', isChecked: false),
+              SectionItem(text: 'Form information', isChecked: true),
+              SectionItem(text: 'Property address', isChecked: false),
+              SectionItem(text: 'Locality', isChecked: false),
+              SectionItem(text: 'Tenure', isChecked: true),
+              SectionItem(text: 'Property size', isChecked: false),
+              SectionItem(text: 'Efficiences', isChecked: false),
+              SectionItem(text: 'New properties (optional)', isChecked: false),
+            ],
+            onActionPressed: () {
+              // Handle arrow button tap
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

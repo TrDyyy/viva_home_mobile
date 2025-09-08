@@ -97,24 +97,30 @@ class BasePageWidget extends StatelessWidget {
               Expanded(
                 child: switch (config.contentType) {
                   ContentType.container => _buildContentContainer(context),
-                  ContentType.modal => Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(child: _buildContentModal(context)),
-                      if (config.actionButtonText != null &&
-                          config.actionButtonOnPressed != null)
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: AppSizes.padding(
-                                context,
-                                SizeCategory.xxlarge,
+                  ContentType.modal => Padding(
+                    padding: EdgeInsets.only(
+                      top: AppSizes.padding(context, SizeCategory.large),
+                      bottom: AppSizes.padding(context, SizeCategory.medium),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(child: _buildContentModal(context)),
+                        if (config.actionButtonText != null &&
+                            config.actionButtonOnPressed != null)
+                          Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: AppSizes.padding(
+                                  context,
+                                  SizeCategory.xxlarge,
+                                ),
                               ),
+                              child: _buildActionButton(context, bg: AppColors.white, fg: AppColors.darkTeal),
                             ),
-                            child: _buildActionButton(context),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 },
               ),
@@ -291,7 +297,7 @@ class BasePageWidget extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.only(
           bottom: AppSizes.padding(context, SizeCategory.large),
-          top: AppSizes.padding(context, SizeCategory.xxlarge),
+          top: AppSizes.padding(context, SizeCategory.medium),
         ),
         child: Column(
           children: [
@@ -328,7 +334,7 @@ class BasePageWidget extends StatelessWidget {
                           padding: EdgeInsets.only(
                             bottom: AppSizes.padding(
                               context,
-                              SizeCategory.medium,
+                              SizeCategory.small,
                             ),
                           ),
                           child: _buildCompletedSection(
@@ -360,7 +366,7 @@ class BasePageWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header với title, subtitle và nút action (mũi tên)
+        // Header with title, subtitle and action button (arrow)
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -388,35 +394,57 @@ class BasePageWidget extends StatelessWidget {
               ),
             ),
             if (onActionPressed != null)
-            InkWell(
-              onTap: onActionPressed,
-              child: Container(
-                padding: EdgeInsets.all(AppSizes.padding(context, SizeCategory.small)),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryTeal, 
-                  border: Border(
-                    left: BorderSide(color: AppColors.darkGray, width: 2),
+              InkWell(
+                onTap: onActionPressed,
+                child: Container(
+                  padding: EdgeInsets.all(
+                    AppSizes.padding(context, SizeCategory.medium) * 0.7,
                   ),
-                ),
-                child: Icon(
-                  Icons.arrow_forward,
-                  color: AppColors.darkTeal,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryTeal,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(
+                        AppSizes.radius(context, SizeCategory.small),
+                      ),
+                      bottomLeft: Radius.circular(
+                        AppSizes.radius(context, SizeCategory.small),
+                      ),
+                    ),
+                  ),
+                  child: Icon(Icons.arrow_forward, color: AppColors.darkTeal),
                 ),
               ),
-            ),
           ],
         ),
-        const SizedBox(height: 16),
-
+        SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
+        Container(
+          color: AppColors.primaryTeal,
+          height: AppSizes.padding(context, SizeCategory.small) * 0.2,
+        ),
+        SizedBox(height: AppSizes.padding(context, SizeCategory.small)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "See details",
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: AppSizes.font(context, SizeCategory.small),
+              ),
+            ),
+            Icon(Icons.close, color: AppColors.accent),
+          ],
+        ),
+        SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
         // List items
         ...items.map(
           (item) => Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            margin: EdgeInsets.only(bottom: AppSizes.padding(context, SizeCategory.medium)),
+            padding: EdgeInsets.symmetric(horizontal: AppSizes.padding(context, SizeCategory.medium), vertical: AppSizes.padding(context, SizeCategory.small)),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
+              border: Border.all(color: AppColors.darkGray),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -432,7 +460,9 @@ class BasePageWidget extends StatelessWidget {
                   item.isChecked
                       ? Icons.check_box
                       : Icons.check_box_outline_blank,
-                  color: item.isChecked ? Colors.teal : Colors.grey,
+                  color: item.isChecked
+                      ? AppColors.primaryTeal
+                      : AppColors.darkGray,
                 ),
               ],
             ),
@@ -462,7 +492,7 @@ class BasePageWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton(BuildContext context) {
+  Widget _buildActionButton(BuildContext context, {Color? bg, Color? fg}) {
     if (config.actionButtonText == null ||
         config.actionButtonOnPressed == null) {
       return const SizedBox.shrink();
@@ -475,8 +505,8 @@ class BasePageWidget extends StatelessWidget {
       child: CustomButton(
         text: config.actionButtonText!,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.darkTeal,
-          foregroundColor: AppColors.white,
+          backgroundColor: bg ?? AppColors.darkTeal,
+          foregroundColor: fg ?? AppColors.white,
         ),
         onPressed: config.actionButtonOnPressed!,
         width: double.infinity,

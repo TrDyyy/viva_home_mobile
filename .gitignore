@@ -11,6 +11,11 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+lib/cubits/
+lib/models/
+**/tree_page.dart
+**/checkbox_individual_widget.dart
+**/custom_checkbox.dart
 
 # IntelliJ related
 *.iml
