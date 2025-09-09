@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viva_home_mobile/pages/details/general/general_detail_page.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
 import 'package:viva_home_mobile/widgets/base_page_widget.dart';
 
@@ -39,7 +40,12 @@ class _GeneralPageState extends State<GeneralPage> {
               SectionItem(text: 'New properties (optional)', isChecked: false),
             ],
             onActionPressed: () {
-              // Handle arrow button tap
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const GeneralDetailPage(),
+                ),
+              );
             },
           ),
         ],

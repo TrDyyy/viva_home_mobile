@@ -34,7 +34,7 @@ class _TreePageState extends State<TreePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Example 1: Traditional tree view (thay thế TreeNodeWidget)
+            // Example 1: Traditional tree view
             _buildSection('Traditional Tree View', [
               const IndividualCheckboxWidget.asTreeNode(nodeKey: 'prop_main'),
               const SizedBox(height: 10),

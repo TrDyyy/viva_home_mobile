@@ -28,23 +28,27 @@ class CardItemConfig {
 /// Configuration for the page layout
 class PageConfig {
   final String title;
-  final String username;
-  final List<CardItemConfig> cards;
+  final String? username;
+  final List<CardItemConfig>? cards;
   final bool useGridLayout; // true = 2-column grid, false = vertical list
   final String? actionButtonText;
   final VoidCallback? actionButtonOnPressed;
   final ContentType contentType;
   final List<ModalSection>? modalSections; // For modal content
+  final bool? isAppBarVisible;
+  final Widget? customBody;
 
   const PageConfig({
     required this.title,
-    required this.username,
-    required this.cards,
+    this.username,
+    this.cards,
     this.useGridLayout = false,
     this.actionButtonText,
     this.actionButtonOnPressed,
     this.contentType = ContentType.container,
     this.modalSections,
+    this.isAppBarVisible = false,
+    this.customBody,
   });
 }
 
@@ -77,56 +81,86 @@ class BasePageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/background1.png"),
-            fit: BoxFit.cover,
+      resizeToAvoidBottomInset: false,
+      appBar: config.isAppBarVisible  == true ? AppBar(
+        title: Text(config.title.toUpperCase()),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: true,
+        backgroundColor: AppColors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close, color: AppColors.darkTeal),
+            onPressed: () {
+              // Handle close action
+            },
           ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              // Header area
-              _buildHeader(context),
-
-              // Content area
-              Expanded(
-                child: switch (config.contentType) {
-                  ContentType.container => _buildContentContainer(context),
-                  ContentType.modal => Padding(
-                    padding: EdgeInsets.only(
-                      top: AppSizes.padding(context, SizeCategory.large),
-                      bottom: AppSizes.padding(context, SizeCategory.medium),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(child: _buildContentModal(context)),
-                        if (config.actionButtonText != null &&
-                            config.actionButtonOnPressed != null)
-                          Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: AppSizes.padding(
-                                  context,
-                                  SizeCategory.xxlarge,
-                                ),
-                              ),
-                              child: _buildActionButton(context, bg: AppColors.white, fg: AppColors.darkTeal),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                },
+        ],
+      ) :null,
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/background1.png"),
+                fit: BoxFit.cover,
               ),
-            ],
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  // Header area
+                  config.isAppBarVisible == false ? _buildHeader(context) : Container(),
+
+                  // Content area
+                  Expanded(
+                    child:
+                        config.customBody ??
+                        switch (config.contentType) {
+                          ContentType.container => _buildContentContainer(
+                            context,
+                          ),
+                          ContentType.modal => _buildModalWrapper(context),
+                        },
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModalWrapper(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: AppSizes.padding(context, SizeCategory.large),
+        bottom: AppSizes.padding(context, SizeCategory.medium),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(child: _buildContentModal(context)),
+          if (config.actionButtonText != null &&
+              config.actionButtonOnPressed != null)
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSizes.padding(context, SizeCategory.xxlarge),
+                ),
+                child: _buildActionButton(
+                  context,
+                  bg: AppColors.white,
+                  fg: AppColors.darkTeal,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -163,7 +197,7 @@ class BasePageWidget extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    config.username,
+                    config.username ?? '',
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: AppSizes.font(context, SizeCategory.medium),
@@ -439,8 +473,13 @@ class BasePageWidget extends StatelessWidget {
         // List items
         ...items.map(
           (item) => Container(
-            margin: EdgeInsets.only(bottom: AppSizes.padding(context, SizeCategory.medium)),
-            padding: EdgeInsets.symmetric(horizontal: AppSizes.padding(context, SizeCategory.medium), vertical: AppSizes.padding(context, SizeCategory.small)),
+            margin: EdgeInsets.only(
+              bottom: AppSizes.padding(context, SizeCategory.medium),
+            ),
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSizes.padding(context, SizeCategory.medium),
+              vertical: AppSizes.padding(context, SizeCategory.small),
+            ),
             decoration: BoxDecoration(
               color: AppColors.white,
               borderRadius: BorderRadius.circular(12),
@@ -475,20 +514,18 @@ class BasePageWidget extends StatelessWidget {
   Widget _buildGridLayout(BuildContext context) {
     return Wrap(
       alignment: WrapAlignment.center,
-      children: config.cards.map((card) {
+      children: config.cards != null ? config.cards!.map((card) {
         return SizedBox(
           width: AppSizes.screenWidth(context) / 2.3,
           child: _buildCard(context, card, CardLayoutType.grid),
         );
-      }).toList(),
+      }).toList() : [],
     );
   }
 
   Widget _buildListLayout(BuildContext context) {
     return Column(
-      children: config.cards
-          .map((card) => _buildCard(context, card, CardLayoutType.list))
-          .toList(),
+      children: config.cards != null ? config.cards!.map((card) => _buildCard(context, card, CardLayoutType.list)).toList() : [],
     );
   }
 

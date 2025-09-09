@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:viva_home_mobile/pages/details/general/general_page.dart';
-import 'package:viva_home_mobile/pages/details/tree_page.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
 import 'package:viva_home_mobile/widgets/base_page_widget.dart';
 

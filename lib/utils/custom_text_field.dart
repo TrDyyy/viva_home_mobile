@@ -13,6 +13,9 @@ class CustomTextField extends StatelessWidget {
   final TextInputAction textInputAction;
   final void Function(String)? onFieldSubmitted;
   final FocusNode? focusNode;
+  final bool? hintTextEnable;
+  final Color? colorBorder;
+  final int? maxLines;
 
   const CustomTextField({
     super.key,
@@ -27,6 +30,9 @@ class CustomTextField extends StatelessWidget {
     this.textInputAction = TextInputAction.done,
     this.onFieldSubmitted,
     this.focusNode,
+    this.hintTextEnable = true,
+    this.colorBorder,
+    this.maxLines,
   });
 
   @override
@@ -40,13 +46,14 @@ class CustomTextField extends StatelessWidget {
       textInputAction: textInputAction,
       onFieldSubmitted: onFieldSubmitted,
       focusNode: focusNode,
+      maxLines: maxLines,
       style: TextStyle(
         fontSize: AppSizes.font(context, SizeCategory.medium),
         color: AppColors.textDark,
         fontWeight: FontWeight.w400,
       ),
       decoration: InputDecoration(
-        labelText: hintText,
+        labelText: hintTextEnable == true ? hintText : null,
         hintText: hintText,
         hintStyle: TextStyle(
           fontSize: AppSizes.font(context, SizeCategory.medium),
@@ -62,8 +69,7 @@ class CustomTextField extends StatelessWidget {
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: AppColors.white,
-        border: _buildBorder(context, AppColors.lightGray, 1),
-        enabledBorder: _buildBorder(context, AppColors.lightGray, 1),
+        enabledBorder: _buildBorder(context, colorBorder?? AppColors.lightGray, 1),
         focusedBorder: _buildBorder(context, AppColors.primaryTeal, 2),
         errorBorder: _buildBorder(context, AppColors.error, 1),
         focusedErrorBorder: _buildBorder(context, AppColors.error, 2),
