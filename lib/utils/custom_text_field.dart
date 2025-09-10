@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/constants.dart';
+import 'constants.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hintText;
@@ -10,6 +10,9 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final bool enabled;
+  final TextInputAction textInputAction;
+  final void Function(String)? onFieldSubmitted;
+  final FocusNode? focusNode;
 
   const CustomTextField({
     super.key,
@@ -21,6 +24,9 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.prefixIcon,
     this.enabled = true,
+    this.textInputAction = TextInputAction.done,
+    this.onFieldSubmitted,
+    this.focusNode,
   });
 
   @override
@@ -31,8 +37,11 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       enabled: enabled,
-      style: const TextStyle(
-        fontSize: AppSizes.fontMedium,
+      textInputAction: textInputAction,
+      onFieldSubmitted: onFieldSubmitted,
+      focusNode: focusNode,
+      style: TextStyle(
+        fontSize: AppSizes.font(context, SizeCategory.medium),
         color: AppColors.textDark,
         fontWeight: FontWeight.w400,
       ),
@@ -40,7 +49,7 @@ class CustomTextField extends StatelessWidget {
         labelText: hintText,
         hintText: hintText,
         hintStyle: TextStyle(
-          fontSize: AppSizes.fontMedium,
+          fontSize: AppSizes.font(context, SizeCategory.medium),
           color: AppColors.darkGray,
           fontWeight: FontWeight.w400,
         ),
@@ -53,34 +62,29 @@ class CustomTextField extends StatelessWidget {
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: AppColors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.lightGray, width: 1.0),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.lightGray, width: 1.0),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: AppColors.primaryTeal,
-            width: 2.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 1.0),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2.0),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 18,
+        border: _buildBorder(context, AppColors.lightGray, 1),
+        enabledBorder: _buildBorder(context, AppColors.lightGray, 1),
+        focusedBorder: _buildBorder(context, AppColors.primaryTeal, 2),
+        errorBorder: _buildBorder(context, AppColors.error, 1),
+        focusedErrorBorder: _buildBorder(context, AppColors.error, 2),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: AppSizes.padding(context, SizeCategory.medium),
+          vertical: AppSizes.padding(context, SizeCategory.large) * 0.75,
         ),
       ),
+    );
+  }
+
+  OutlineInputBorder _buildBorder(
+    BuildContext context,
+    Color color,
+    double width,
+  ) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        AppSizes.radius(context, SizeCategory.medium),
+      ),
+      borderSide: BorderSide(color: color, width: width),
     );
   }
 }

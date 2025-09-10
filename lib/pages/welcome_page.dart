@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
-import 'package:viva_home_mobile/widgets/custom_button.dart';
+import 'package:viva_home_mobile/utils/custom_button.dart';
 import 'package:viva_home_mobile/widgets/custom_bottom_sheet.dart';
 import 'package:viva_home_mobile/widgets/login_form.dart';
+import 'package:viva_home_mobile/widgets/base_logo_page.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -14,103 +15,90 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/background1.png"),
-            fit: BoxFit.cover,
+    return BaseLogoPage(
+      heroTag: 'app_logo',
+      logoWidth: AppSizes.padding(context, SizeCategory.xxxlarge) * 4.5,
+      logoHeight: AppSizes.padding(context, SizeCategory.xxxlarge) * 4,
+      child: Column(
+        children: [
+          SizedBox(
+            height: AppSizes.padding(context, SizeCategory.xxxlarge) * 10,
           ),
-        ),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSizes.padding(context, SizeCategory.xlarge),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: CustomButton(
+                    text: AppStrings.joinButton,
+                    height:
+                        AppSizes.padding(context, SizeCategory.xlarge) * 1.8,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.white,
+                      foregroundColor: AppColors.darkTeal,
+                    ),
+                    onPressed: () {
+                      // Navigate to join page (later)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Coming soon...")),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(width: AppSizes.padding(context, SizeCategory.large)),
+                Expanded(
+                  child: CustomButton(
+                    text: AppStrings.loginButton,
+                    borderColor: AppColors.white,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.transparent,
+                      foregroundColor: AppColors.white,
+                    ),
+                    height:
+                        AppSizes.padding(context, SizeCategory.xlarge) * 1.8,
+                    onPressed: () {
+                      CustomBottomSheet.show(
+                        context: context,
+                        title: AppStrings.loginTitle,
+                        child: const LoginForm(),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
+          // Terms and privacy
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: AppSizes.paddingXLarge),
-              Center(
-                child: Container(
-                  width: 220,
-                  height: 200,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    image: DecorationImage(
-                      image: AssetImage("assets/images/image.png"),
-                      fit: BoxFit.contain,
-                    ),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  AppStrings.privacyPolicy,
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontSize: AppSizes.font(context, SizeCategory.medium),
                   ),
                 ),
               ),
-              const SizedBox(height: 500),
-              Padding(
-                padding: const EdgeInsets.only(left: 32.0, right: 32.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: CustomButton(
-                        buttonKey: "welcomepage",
-                        height: 60,
-                        text: AppStrings.joinButton,
-                        onPressed: () {
-                          // Navigate to join page (later)
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Coming soon..."),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: AppSizes.paddingLarge),
-                    Expanded(
-                      child: CustomButton(
-                        buttonKey: "welcomepage",
-                        height: 60,
-                        text: AppStrings.loginButton,
-                        onPressed: () {
-                          CustomBottomSheet.show(
-                            context: context,
-                            title: AppStrings.loginTitle,
-                            child: const LoginForm(),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  AppStrings.termsConditions,
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontSize: AppSizes.font(context, SizeCategory.medium),
+                  ),
                 ),
-              ),
-              const SizedBox(height: AppSizes.paddingMedium),
-              // Terms and privacy
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      AppStrings.privacyPolicy,
-                      style: TextStyle(
-                        color: AppColors.white,
-                        fontSize: AppSizes.fontMedium,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      AppStrings.termsConditions,
-                      style: TextStyle(
-                        color: AppColors.white,
-                        fontSize: AppSizes.fontMedium,
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }

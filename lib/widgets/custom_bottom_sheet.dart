@@ -43,15 +43,14 @@ class CustomBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final bottomSheetHeight = height ?? screenHeight * 0.6;
+    final bottomSheetHeight = height ?? AppSizes.screenHeight(context) * 0.6;
     return Container(
       height: bottomSheetHeight,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(AppSizes.radiusLarge),
-          topRight: Radius.circular(AppSizes.radiusLarge),
+          topLeft: Radius.circular(AppSizes.radius(context, SizeCategory.large)),
+          topRight: Radius.circular(AppSizes.radius(context, SizeCategory.large)),
         ),
       ),
       child: Column(
@@ -59,24 +58,21 @@ class CustomBottomSheet extends StatelessWidget {
           // Drag handle
           if (enableDrag)
             Container(
-              margin: const EdgeInsets.only(top: AppSizes.paddingMedium),
-              width: 40,
-              height: 4,
+              margin: EdgeInsets.only(top: AppSizes.padding(context, SizeCategory.medium)),
               decoration: BoxDecoration(
                 color: AppColors.lightGray,
-                borderRadius: BorderRadius.circular(2),
               ),
             ),
           
           // Title
           if (title != null)
             Padding(
-              padding: const EdgeInsets.all(AppSizes.paddingLarge),
+              padding: EdgeInsets.all(AppSizes.padding(context, SizeCategory.large)),
               child: Text(
                 title!,
                 style: TextStyle(
-                  fontSize: AppSizes.fontXXLarge,
-                  fontWeight: FontWeight.bold,
+                  fontSize: AppSizes.font(context, SizeCategory.xxxlarge),
+                  fontWeight: FontWeight.w900,
                   color: AppColors.darkTeal,
                 ),
               ),
@@ -85,8 +81,8 @@ class CustomBottomSheet extends StatelessWidget {
           // Content
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSizes.paddingLarge,
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSizes.padding(context, SizeCategory.large),
               ),
               child: child,
             ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import '../utils/validation.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/custom_button.dart';
+import '../utils/custom_text_field.dart';
+import '../utils/custom_button.dart';
 import '../pages/home_page.dart';
 
 class LoginForm extends StatefulWidget {
@@ -18,11 +18,13 @@ class _LoginFormState extends State<LoginForm> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
+  final _passwordFocusNode = FocusNode();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -34,7 +36,7 @@ class _LoginFormState extends State<LoginForm> {
 
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
-      
+
       setState(() {
         _isLoading = false;
       });
@@ -42,14 +44,12 @@ class _LoginFormState extends State<LoginForm> {
       if (mounted) {
         Navigator.pop(context); // Close bottom sheet
         // Navigate to home page with username from email
-        String username = _emailController.text.isNotEmpty 
-            ? _emailController.text.split('@').first 
+        String username = _emailController.text.isNotEmpty
+            ? _emailController.text.split('@').first
             : "User";
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => HomePage(username: username),
-          ),
+          MaterialPageRoute(builder: (context) => HomePage(username: username)),
         );
       }
     }
@@ -67,24 +67,33 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: AppSizes.paddingMedium),
-              
+              SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
+
               // Email field
               CustomTextField(
                 controller: _emailController,
                 hintText: AppStrings.emailHint,
                 keyboardType: TextInputType.emailAddress,
                 validator: ValidationUtils.validateEmail,
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (_) {
+                  FocusScope.of(context).requestFocus(_passwordFocusNode);
+                },
               ),
-              
-              const SizedBox(height: AppSizes.paddingMedium),
-              
+
+              SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
+
               // Password field
               CustomTextField(
                 controller: _passwordController,
                 hintText: AppStrings.passwordHint,
                 obscureText: _obscurePassword,
                 validator: ValidationUtils.validatePassword,
+                focusNode: _passwordFocusNode,
+                textInputAction: TextInputAction.done,
+                onFieldSubmitted: (_) {
+                  _handleLogin();
+                },
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -96,66 +105,71 @@ class _LoginFormState extends State<LoginForm> {
                     });
                   },
                 ),
+                prefixIcon: null,
               ),
-              
-              const SizedBox(height: AppSizes.paddingSmall),
-              
+
+              SizedBox(height: AppSizes.padding(context, SizeCategory.small)),
+
               // Forgot password
-              Align(
-                alignment: Alignment.center,
+              Center(
                 child: TextButton(
                   onPressed: () {
                     // Handle forgot password
                   },
-                  child: const Text(
+                  child: Text(
                     AppStrings.forgotPassword,
                     style: TextStyle(
                       color: AppColors.darkGray,
-                      fontSize: AppSizes.fontMedium,
+                      fontSize: AppSizes.font(context, SizeCategory.small),
                     ),
                   ),
                 ),
               ),
-              
-              const SizedBox(height: AppSizes.paddingSmall),
-              
+
+              SizedBox(height: AppSizes.padding(context, SizeCategory.small)),
+
               // Connect surveyor text
-              const Text(
+              Text(
                 AppStrings.connectSurveyor,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.darkTeal,
-                  fontSize: AppSizes.fontMedium,
+                  fontSize: AppSizes.font(context, SizeCategory.medium),
                 ),
               ),
-              
-              const SizedBox(height: AppSizes.paddingLarge),
-              
+
+              SizedBox(height: AppSizes.padding(context, SizeCategory.large)),
+
               // Login button
               CustomButton(
-                buttonKey: "loginpage",
                 text: AppStrings.loginButton,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.darkTeal,
+                  foregroundColor: AppColors.white,
+                ),
                 isLoading: _isLoading,
                 onPressed: _isLoading ? null : _handleLogin,
               ),
-              
-              const SizedBox(height: AppSizes.paddingLarge),
-              
+
+              SizedBox(height: AppSizes.padding(context, SizeCategory.large)),
+
               // Terms and conditions
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingMedium),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSizes.padding(context, SizeCategory.medium),
+                ),
                 child: Text(
                   AppStrings.agreeToTerms,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppColors.darkGray,
-                    fontSize: AppSizes.fontSmall,
+                    fontSize: AppSizes.font(context, SizeCategory.small),
                     height: 1.4,
                   ),
                 ),
               ),
-              
-              const SizedBox(height: AppSizes.paddingLarge),
+
+              SizedBox(height: AppSizes.padding(context, SizeCategory.large)),
             ],
           ),
         ),
