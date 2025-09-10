@@ -16,6 +16,7 @@ class CustomTextField extends StatelessWidget {
   final bool? hintTextEnable;
   final Color? colorBorder;
   final int? maxLines;
+  final int? maxLength;
 
   const CustomTextField({
     super.key,
@@ -33,6 +34,7 @@ class CustomTextField extends StatelessWidget {
     this.hintTextEnable = true,
     this.colorBorder,
     this.maxLines,
+    this.maxLength,
   });
 
   @override
@@ -47,6 +49,7 @@ class CustomTextField extends StatelessWidget {
       onFieldSubmitted: onFieldSubmitted,
       focusNode: focusNode,
       maxLines: maxLines,
+      maxLength: maxLength,
       style: TextStyle(
         fontSize: AppSizes.font(context, SizeCategory.medium),
         color: AppColors.textDark,
@@ -69,7 +72,11 @@ class CustomTextField extends StatelessWidget {
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: AppColors.white,
-        enabledBorder: _buildBorder(context, colorBorder?? AppColors.lightGray, 1),
+        enabledBorder: _buildBorder(
+          context,
+          colorBorder ?? AppColors.lightGray,
+          1,
+        ),
         focusedBorder: _buildBorder(context, AppColors.primaryTeal, 2),
         errorBorder: _buildBorder(context, AppColors.error, 1),
         focusedErrorBorder: _buildBorder(context, AppColors.error, 2),

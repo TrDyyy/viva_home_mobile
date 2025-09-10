@@ -7,11 +7,11 @@ class CustomRadioGroup<T> extends StatelessWidget {
   final ValueChanged<T?> onChanged;
 
   const CustomRadioGroup({
-    Key? key,
+    super.key,
     required this.options,
     required this.groupValue,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

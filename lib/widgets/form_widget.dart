@@ -107,13 +107,13 @@ class FormFieldWrapper extends StatelessWidget {
 
 class FormFieldGroup extends StatelessWidget {
   final String? label;
-  final bool customFieldText; //render label + spacing
+  final bool customLabelText; //render label + spacing
   final List<Widget> items;
 
   const FormFieldGroup({
     super.key,
     this.label,
-    this.customFieldText = false,
+    this.customLabelText = false,
     required this.items,
   });
 
@@ -122,7 +122,7 @@ class FormFieldGroup extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!customFieldText) ...[
+        if (!customLabelText) ...[
           Text(
             label ?? '',
             style: TextStyle(
