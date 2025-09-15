@@ -22,4 +22,30 @@ class ValidationUtils {
     }
     return null;
   }
+
+  // Required field validation
+  static String? required(String? value, {String fieldName = "This field"}) {
+    if (value == null || value.trim().isEmpty) {
+      return "$fieldName is required";
+    }
+    return null;
+  }
+
+  // Number validation
+  static String? number(String? value, {bool allowDecimal = false}) {
+    if (value == null || value.isEmpty) {
+      return "Number is required";
+    }
+    final regex = allowDecimal ? RegExp(r'^\d*\.?\d+$') : RegExp(r'^\d+$');
+    if (!regex.hasMatch(value)) {
+      return "Please enter a valid number";
+    }
+    return null;
+  }
+   static String? validateRequiredOption<T>(T? value, {String? message}) {
+    if (value == null) {
+      return message ?? 'This field is required';
+    }
+    return null;
+  }
 }

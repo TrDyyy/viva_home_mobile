@@ -30,7 +30,7 @@ class _GalleryThumbnailState extends State<GalleryThumbnail> {
 
     if (albums.isNotEmpty) {
       final recent = albums.first;
-      final media = await recent.getAssetListRange(start: 0, end: 1); // lấy ảnh mới nhất
+      final media = await recent.getAssetListRange(start: 0, end: 1); 
       if (media.isNotEmpty) {
         final file = await media.first.thumbnailDataWithSize(ThumbnailSize(200, 200));
         setState(() {
