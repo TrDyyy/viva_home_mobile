@@ -5,43 +5,44 @@ import 'package:viva_home_mobile/utils/constants.dart';
 class PhotoPreviewPage extends StatelessWidget {
   final String imagePath;
 
-  const PhotoPreviewPage({
-    super.key,
-    required this.imagePath,
-  });
+  const PhotoPreviewPage({super.key, required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.darkTeal,
+      appBar: AppBar(
+        title: Text("ADD PHOTO", style: TextStyle(fontWeight: FontWeight.w600)),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: true,
+        backgroundColor: AppColors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close, color: AppColors.darkTeal),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
-          // Header
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
+              padding: EdgeInsets.only(
+                top: AppSizes.padding(context, SizeCategory.large),
+              ),
+              child: Expanded(
+                child: Text(
+                  "Are you sure you want to upload?",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: AppSizes.font(context, SizeCategory.large),
+                    fontWeight: FontWeight.w600,
                   ),
-                  const Expanded(
-                    child: Text(
-                      "Are you sure you want to upload?",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white),
-                    onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
-                  ),
-                ],
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ),
@@ -49,23 +50,32 @@ class PhotoPreviewPage extends StatelessWidget {
           // Image Preview
           Expanded(
             child: Container(
-              margin: const EdgeInsets.all(20),
+              margin: EdgeInsets.symmetric(
+                horizontal: AppSizes.padding(context, SizeCategory.large),
+                vertical: AppSizes.padding(context, SizeCategory.small),
+              ),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(
+                  AppSizes.radius(context, SizeCategory.large),
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: AppColors.dark,
                     blurRadius: 15,
                     offset: const Offset(0, 8),
                   ),
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.file(
-                  File(imagePath),
-                  fit: BoxFit.contain,
-                  width: double.infinity,
+                borderRadius: BorderRadius.circular(
+                  AppSizes.radius(context, SizeCategory.large),
+                ),
+                child: Container(
+                  color: AppColors.dark,
+                  child: FittedBox(
+                    fit: BoxFit.contain, 
+                    child: Image.file(File(imagePath)),
+                  ),
                 ),
               ),
             ),
@@ -81,8 +91,8 @@ class PhotoPreviewPage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop(); 
-                      Navigator.of(context).pop(File(imagePath)); 
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(File(imagePath));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,

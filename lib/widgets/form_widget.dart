@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
+import 'package:viva_home_mobile/widgets/checkbox_individual_widget.dart';
 
 class FormSection extends StatelessWidget {
   final List<Widget> children;
@@ -45,13 +46,17 @@ class FormSection extends StatelessWidget {
 }
 
 class FormFieldWrapper extends StatelessWidget {
-  final String label;
+  final bool? cus;
+  final String? label;
   final String? subtitle;
+  final String? nodeKey;
   final Widget child;
 
   const FormFieldWrapper({
     super.key,
-    required this.label,
+    this.label,
+    this.cus = false,
+    this.nodeKey,
     this.subtitle,
     required this.child,
   });
@@ -64,32 +69,41 @@ class FormFieldWrapper extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Checkbox(
-                activeColor: AppColors.primaryTeal,
-                value: true,
-                onChanged: (val) {},
-              ),
-              Text(
-                label.toUpperCase(),
-                style: TextStyle(
-                  fontSize: AppSizes.font(context, SizeCategory.xxlarge),
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.darkTeal,
+              if (nodeKey != null)
+                IndividualCheckboxWidget.standalone(nodeKey: nodeKey!, showtitle: false),
+              SizedBox(width: AppSizes.padding(context, SizeCategory.small)),
+              Expanded(
+                child: Text(
+                  label!.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: AppSizes.font(context, SizeCategory.xxlarge),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.darkTeal,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
               ),
             ],
           ),
+
           SizedBox(height: AppSizes.padding(context, SizeCategory.small)),
           if (subtitle != null) ...[
             Padding(
-              padding:  EdgeInsets.only(left: AppSizes.padding(context, SizeCategory.medium)),
-              child: Text(subtitle!.toUpperCase(), style: TextStyle(
-                fontSize: AppSizes.font(context, SizeCategory.xlarge),
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryTeal,
-              )),
+              padding: EdgeInsets.only(
+                left: AppSizes.padding(context, SizeCategory.medium),
+              ),
+              child: Text(
+                subtitle!.toUpperCase(),
+                style: TextStyle(
+                  fontSize: AppSizes.font(context, SizeCategory.xlarge),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryTeal,
+                ),
+              ),
             ),
             SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
           ],
@@ -136,7 +150,9 @@ class FormFieldGroup extends StatelessWidget {
         ...items.expand(
           (item) => [
             item,
-            SizedBox(height: AppSizes.padding(context, SizeCategory.medium) *0.5),
+            SizedBox(
+              height: AppSizes.padding(context, SizeCategory.medium) * 0.5,
+            ),
           ],
         ),
       ],

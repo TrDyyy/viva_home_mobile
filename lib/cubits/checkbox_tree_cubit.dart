@@ -22,7 +22,7 @@ class GlobalTreeManager extends Cubit<GlobalTreeState> {
     final node = updatedNodes[nodeKey];
     if (node == null || !node.isEnabled) return;
 
-    //Update current node
+
     updatedNodes[nodeKey] = node.copyWith(isChecked: isChecked);
 
     // Update parent based on children states

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viva_home_mobile/pages/splash_page.dart';
+import 'package:viva_home_mobile/widgets/checkbox_individual_widget.dart';
 import '../utils/constants.dart';
 import '../utils/custom_button.dart';
 
@@ -54,9 +55,9 @@ class PageConfig {
 
 class SectionItem {
   final String text;
-  final bool isChecked;
+  final String nodeKey;
 
-  SectionItem({required this.text, this.isChecked = false});
+  SectionItem({required this.text, required this.nodeKey});
 }
 
 class ModalSection {
@@ -495,14 +496,7 @@ class BasePageWidget extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                Icon(
-                  item.isChecked
-                      ? Icons.check_box
-                      : Icons.check_box_outline_blank,
-                  color: item.isChecked
-                      ? AppColors.primaryTeal
-                      : AppColors.darkGray,
-                ),
+              IndividualCheckboxWidget.standalone(nodeKey: item.nodeKey ,showtitle: false)
               ],
             ),
           ),

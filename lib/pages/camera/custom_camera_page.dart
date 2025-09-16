@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
 import 'package:viva_home_mobile/pages/camera/photo_preview_page.dart';
-import 'package:viva_home_mobile/widgets/GalleryThumbnail.dart';
+import 'package:viva_home_mobile/widgets/gallery_thumbnail.dart';
 
 class CustomCameraPage extends StatefulWidget {
+  const CustomCameraPage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _CustomCameraPageState createState() => _CustomCameraPageState();
 }
 
@@ -35,7 +38,7 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
         });
       }
     } catch (e) {
-      print('Error initializing camera: $e');
+      debugPrint('Error initializing camera: $e');
     }
   }
 
@@ -48,7 +51,22 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.dark,
+      appBar: AppBar(
+        title: Text("ADD PHOTO", style: TextStyle(fontWeight: FontWeight.w600)),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: true,
+        backgroundColor: AppColors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close, color: AppColors.darkTeal),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
       body: Stack(
         children: [
           // Camera Preview
@@ -56,100 +74,71 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
             child: isCameraInitialized && _controller != null
                 ? CameraPreview(_controller!)
                 : Container(
-                    color: Colors.black,
+                    color: AppColors.dark,
                     child: const Center(
-                      child: CircularProgressIndicator(color: Colors.white),
+                      child: CircularProgressIndicator(color: AppColors.white),
                     ),
                   ),
           ),
-
-          // Custom UI Overlay
           Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 150,
-              decoration: BoxDecoration(
-                color: AppColors.darkTeal,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+            top: 10,
+            left: 10,
+            child: Padding(
+              padding: EdgeInsets.all(
+                AppSizes.padding(context, SizeCategory.small),
+              ),
+              child: InkWell(
+                onTap: _switchCamera,
+                child: Icon(
+                  Icons.cameraswitch_rounded,
+                  color: AppColors.white,
+                  size: AppSizes.icon(context, SizeCategory.large),
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Gallery Button
-                  GalleryThumbnail(onTap: _pickFromGallery),
-
-                  // Capture Button
-                  GestureDetector(
-                    onTap: _capturePhoto,
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 4),
-                      ),
-                      child: Container(
-                        margin: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Close Button
-                  IconButton(
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
             ),
           ),
 
-          // Top Header
           Positioned(
-            top: 60,
+            bottom: 100,
             left: 0,
             right: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            child:
+                // Capture Button
+                GestureDetector(
+                  onTap: _capturePhoto,
+                  child: Container(
+                    width: AppSizes.container(context, SizeCategory.small),
+                    height: AppSizes.container(context, SizeCategory.small),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 4),
+                    ),
+                    child: Container(
+                      margin: EdgeInsets.all(
+                        AppSizes.padding(context, SizeCategory.small) * 0.5,
+                      ),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.white,
+                      ),
+                    ),
+                  ),
+                ),
+          ),
+
+          Positioned(
+            bottom: 10,
+            left: 10,
+            child: Padding(
+              padding: EdgeInsets.all(AppSizes.padding(context, SizeCategory.small)),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "ADD PHOTO",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    width: AppSizes.padding(context, SizeCategory.large),
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.cameraswitch,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                    onPressed: _switchCamera,
-                  ),
+                  GalleryThumbnail(onTap: _pickFromGallery),
+                  SizedBox(width: AppSizes.padding(context, SizeCategory.small)),
+                  Text("Image Library", style: TextStyle(color: AppColors.white)),
                 ],
               ),
-            ),
+            )
           ),
         ],
       ),
@@ -166,10 +155,7 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
       });
       _showPreview();
     } catch (e) {
-      print('Error capturing photo: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Error capturing photo')));
+      debugPrint('Error capturing photo: $e');
     }
   }
 
@@ -195,6 +181,7 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
         ),
       ).then((result) {
         if (result is File) {
+          // ignore: use_build_context_synchronously
           Navigator.pop(context, result);
         }
       });
@@ -203,14 +190,9 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
 
   Future<void> _switchCamera() async {
     if (cameras == null || cameras!.isEmpty) return;
-
     selectedCameraIndex = (selectedCameraIndex + 1) % cameras!.length;
-
     final cameraDescription = cameras![selectedCameraIndex];
-
-    // Dispose controller cũ trước
     await _controller?.dispose();
-
     _controller = CameraController(cameraDescription, ResolutionPreset.high);
 
     try {
@@ -221,7 +203,7 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
         });
       }
     } catch (e) {
-      print('Error switching camera: $e');
+      debugPrint('Error switching camera: $e');
     }
   }
 }

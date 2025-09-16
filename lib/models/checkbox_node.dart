@@ -2,7 +2,7 @@ enum CheckSource { manual, auto }
 
 class TreeNode {
   final String key;
-  final String title;
+  final String? title;
   final bool isEnabled;
   final CheckSource checkSource; // Source of the check (manual, comboBox, etc.)
   final bool isChecked;
@@ -13,7 +13,7 @@ class TreeNode {
 
   TreeNode({
     required this.key,
-    required this.title,
+    this.title,
     this.isEnabled = true,
     this.checkSource = CheckSource.manual,
     this.isChecked = false,

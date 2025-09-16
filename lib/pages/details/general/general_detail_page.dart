@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart' as path;
+import 'package:viva_home_mobile/cubits/checkbox_tree_cubit.dart';
+import 'package:viva_home_mobile/hooks/use_show_image_fullscreen.dart';
+import 'package:viva_home_mobile/models/tree_config.dart';
 import 'package:viva_home_mobile/pages/camera/custom_camera_page.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
 import 'package:viva_home_mobile/utils/custom_button.dart';
@@ -12,6 +15,7 @@ import 'package:viva_home_mobile/utils/radio_group.dart';
 import 'package:viva_home_mobile/utils/validation.dart';
 import 'package:viva_home_mobile/widgets/base_page_widget.dart';
 import 'package:viva_home_mobile/widgets/form_widget.dart';
+import 'package:viva_home_mobile/widgets/upload_success_card.dart';
 
 class GeneralDetailPage extends StatefulWidget {
   const GeneralDetailPage({super.key});
@@ -27,8 +31,36 @@ final Map<String, dynamic> formData = {};
 class _GeneralDetailPageState extends State<GeneralDetailPage> {
   final List<AddOwnerWidget> ownerFields = [];
   bool showInfoCard = false;
-
   int index = 1;
+  bool _hasInitialized = false;
+
+  //Boolean update checkboxWidget
+  bool hasPurpose = false;
+  bool hasTitle = false;
+  bool hasFirstName = false;
+  bool hasSurname = false;
+
+  bool shouldCheckIntentOfValuation() => hasPurpose;
+  bool shouldCheckHomeowner() => hasTitle && hasFirstName && hasSurname;
+
+  void _updateNodeWithConditions(String nodeKey) {
+    late bool shouldCheck;
+
+    switch (nodeKey) {
+      case "det_gen_iot":
+        shouldCheck = shouldCheckIntentOfValuation();
+      case "det_gen_homeowner":
+        shouldCheck = shouldCheckHomeowner();
+        break;
+
+      default:
+        shouldCheck = false;
+    }
+
+    context.read<GlobalTreeManager>().toggleNode(nodeKey, shouldCheck);
+  }
+
+  //Data for formData
   bool? isHomeowner;
   bool? hasGroundRentServiceCharge;
   String? energyEfficienciesOption;
@@ -39,6 +71,21 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
   File? selectedImage;
   String? selectedFileName;
   bool showUploadSuccess = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasInitialized) {
+      _initializeTreeData();
+      _hasInitialized = true;
+    }
+  }
+
+  void _initializeTreeData() {
+    context.read<GlobalTreeManager>().initializeNodes(
+      CheckboxTreesConfig.allTrees,
+    );
+  }
 
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
@@ -68,30 +115,21 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
     });
   }
 
-  Future<void> _pickImageFromCamera() async {
+  Future<File?> _pickImageFromCamera() async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => CustomCameraPage()),
     );
     if (result is File) {
-      setState(() {
-        selectedImage = result;
-        selectedFileName = path.basename(result.path);
-        showUploadSuccess = true;
-      });
+      return result;
     }
+    return null;
   }
 
-  Future<void> _pickImageFromGallery() async {
+  Future<File?> _pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        selectedImage = File(image.path);
-        selectedFileName = path.basename(image.path);
-        showUploadSuccess = true;
-      });
-    }
+    return image != null ? File(image.path) : null;
   }
 
   @override
@@ -116,6 +154,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       // Intent of valuation section
                       FormFieldWrapper(
                         label: "Intent of valuation",
+                        nodeKey: "det_gen_iot",
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -128,7 +167,8 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                 "General Sale",
                                 "Other",
                               ],
-                              onChanged: (val) {},
+                              onChanged: (val) =>
+                                  _updateNodeWithConditions('det_gen_iot'),
                               validator: ValidationUtils.required,
                               onSaved: (val) => formData["purpose"] = val,
                             ),
@@ -152,6 +192,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       // Homeowner section
                       FormFieldWrapper(
                         label: "Homeowner",
+                        nodeKey: "det_gen_homeowner",
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -165,7 +206,10 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                 "Prof",
                                 "Other",
                               ],
-                              onChanged: (val) {},
+                              onChanged: (val) {
+                                setState(() => hasTitle = val!.isNotEmpty);
+                                _updateNodeWithConditions("det_gen_homeowner");
+                              },
                               validator: ValidationUtils.required,
                               onSaved: (val) =>
                                   formData["homeowner_name"] = val,
@@ -189,6 +233,12 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               hintText: "John…",
                               onSaved: (val) =>
                                   formData["first_name_$index"] = val,
+                              onChanged: (val) {
+                                setState(
+                                  () => hasFirstName = val!.trim().isNotEmpty,
+                                );
+                                _updateNodeWithConditions("det_gen_homeowner");
+                              },
                               validator: ValidationUtils.required,
                             ),
                             SizedBox(
@@ -203,6 +253,10 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               onSaved: (val) =>
                                   formData["surname_$index"] = val,
                               validator: ValidationUtils.required,
+                              onChanged: (val) {
+                                setState(() => hasSurname = val!.trim().isNotEmpty);
+                                _updateNodeWithConditions("det_gen_homeowner");
+                              },
                             ),
                             SizedBox(
                               height: AppSizes.padding(
@@ -768,20 +822,22 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                             FormFieldGroup(
                               customLabelText: true,
                               items: [
-                                FormField<String>(
+                                FormField<File>(
                                   validator: (value) {
                                     if (isHasUKFinanceDisclosure == true &&
-                                        (selectedFileName == null ||
-                                            selectedFileName!.isEmpty)) {
+                                        value == null) {
                                       return "Please upload a document";
                                     }
                                     return null;
                                   },
+                                  onSaved: (value) =>
+                                      formData["uploadedFile"] = value,
                                   builder: (field) {
                                     return Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
+                                        // Upload Box
                                         Container(
                                           padding: EdgeInsets.symmetric(
                                             horizontal: AppSizes.padding(
@@ -813,7 +869,9 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  selectedFileName ??
+                                                  field.value?.path
+                                                          .split("/")
+                                                          .last ??
                                                       "upload.jpg",
                                                   style: TextStyle(
                                                     fontSize: AppSizes.font(
@@ -821,8 +879,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                                       SizeCategory.large,
                                                     ),
                                                     fontWeight: FontWeight.w400,
-                                                    color:
-                                                        selectedFileName != null
+                                                    color: field.value != null
                                                         ? AppColors.primaryTeal
                                                         : AppColors.darkGray,
                                                   ),
@@ -831,7 +888,13 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                               InkWell(
                                                 borderRadius:
                                                     BorderRadius.circular(4),
-                                                onTap: _pickImageFromCamera,
+                                                onTap: () async {
+                                                  final file =
+                                                      await _pickImageFromCamera();
+                                                  if (file != null) {
+                                                    field.didChange(file);
+                                                  }
+                                                },
                                                 child: const Icon(
                                                   Icons.camera_alt_outlined,
                                                 ),
@@ -845,7 +908,13 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                               InkWell(
                                                 borderRadius:
                                                     BorderRadius.circular(4),
-                                                onTap: _pickImageFromGallery,
+                                                onTap: () async {
+                                                  final file =
+                                                      await _pickImageFromGallery();
+                                                  if (file != null) {
+                                                    field.didChange(file);
+                                                  }
+                                                },
                                                 child: const Icon(
                                                   Icons.upload_outlined,
                                                 ),
@@ -853,6 +922,8 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                             ],
                                           ),
                                         ),
+
+                                        // Error
                                         if (field.hasError)
                                           Padding(
                                             padding: EdgeInsets.only(
@@ -874,6 +945,26 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                               ),
                                             ),
                                           ),
+
+                                        // Upload Success Card (preview)
+                                        if (field.value != null) ...[
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              top: AppSizes.padding(
+                                                context,
+                                                SizeCategory.medium,
+                                              ),
+                                            ),
+                                            child: UploadSuccessCard(
+                                              fileName: field.value!.path
+                                                  .split("/")
+                                                  .last,
+                                              imageFile: field.value,
+                                              onClose: () =>
+                                                  field.didChange(null),
+                                            ),
+                                          ),
+                                        ],
                                       ],
                                     );
                                   },
@@ -1054,6 +1145,7 @@ FormFieldGroup buildCustomTextField({
   int? maxLines,
   String? Function(String?)? validator,
   void Function(String?)? onSaved,
+  void Function(String?)? onChanged,
 }) {
   return FormFieldGroup(
     label: label,
@@ -1069,6 +1161,7 @@ FormFieldGroup buildCustomTextField({
         maxLines: maxLines,
         validator: validator,
         onSaved: onSaved,
+        onChanged: onChanged,
       ),
     ],
   );
@@ -1268,47 +1361,11 @@ class InfoCard extends StatelessWidget {
                   bottom: 8,
                   right: 8,
                   child: InkWell(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) {
-                          return Scaffold(
-                            backgroundColor: AppColors.dark,
-                            body: Stack(
-                              children: [
-                                Center(
-                                  child: Hero(
-                                    tag: "ukFormImage",
-                                    child: InteractiveViewer(
-                                      panEnabled: true,
-                                      minScale: 0.8,
-                                      maxScale: 4.0,
-                                      child: Image.asset(
-                                        "assets/images/ukForm.png",
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 40,
-                                  right: 20,
-                                  child: IconButton(
-                                    icon: const Icon(
-                                      Icons.close,
-                                      color: AppColors.white,
-                                      size: 32,
-                                    ),
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
+                    onTap: () => showImageFullScreen(
+                      context,
+                      tag: "ukFormImage",
+                      image: const AssetImage("assets/images/ukForm.png"),
+                    ),
                     child: const CircleAvatar(
                       radius: 16,
                       backgroundColor: Colors.black54,
