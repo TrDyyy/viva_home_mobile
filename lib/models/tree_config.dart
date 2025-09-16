@@ -29,8 +29,8 @@ class CheckboxTreesConfig {
       level: 1,
       checkSource: CheckSource.auto,
     ),
-    "det_gen_iot": TreeNode(
-      key: "det_gen_iot",
+    "det_gen_iov": TreeNode(
+      key: "det_gen_iov",
       title: "Intent of valuation",
       treePath: "detail.general.iot",
       level: 2,
@@ -110,7 +110,7 @@ class CheckboxTreesConfig {
 
   // Helper methods for specific use cases
   static List<String> get generalLeaf => [
-    'det_gen_iot', 'det_gen_tenure', 'det_gen_proSize', 'det_gen_efficiences', 'det_gen_newProperty', "det_gen_formInfo", "det_gen_homeowner", "det_gen_locality", "det_gen_proAddress",
+    'det_gen_iov', 'det_gen_tenure', 'det_gen_proSize', 'det_gen_efficiences', 'det_gen_newProperty', "det_gen_formInfo", "det_gen_homeowner", "det_gen_locality", "det_gen_proAddress",
   ];
 
   // Get nodes by category

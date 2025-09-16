@@ -50,7 +50,7 @@ class _GeneralPageState extends State<GeneralPage> {
             title: 'General',
             subtitle: 'Completed',
             items: [
-              SectionItem(text: 'Intent of valuation', nodeKey: 'det_gen_iot'),
+              SectionItem(text: 'Intent of valuation', nodeKey: 'det_gen_iov'),
               SectionItem(text: 'Homeowner', nodeKey: 'det_gen_homeowner'),
               SectionItem(text: 'Form information', nodeKey: 'det_gen_formInfo'),
               SectionItem(text: 'Property address', nodeKey: 'det_gen_proAddress'),

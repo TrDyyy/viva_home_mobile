@@ -47,7 +47,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
     late bool shouldCheck;
 
     switch (nodeKey) {
-      case "det_gen_iot":
+      case "det_gen_iov":
         shouldCheck = shouldCheckIntentOfValuation();
       case "det_gen_homeowner":
         shouldCheck = shouldCheckHomeowner();
@@ -154,7 +154,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       // Intent of valuation section
                       FormFieldWrapper(
                         label: "Intent of valuation",
-                        nodeKey: "det_gen_iot",
+                        nodeKey: "det_gen_iov",
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -167,8 +167,10 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                 "General Sale",
                                 "Other",
                               ],
-                              onChanged: (val) =>
-                                  _updateNodeWithConditions('det_gen_iot'),
+                              onChanged: (val) {
+                                setState(() => hasPurpose = val!.isNotEmpty);
+                                _updateNodeWithConditions("det_gen_iov");
+                              },
                               validator: ValidationUtils.required,
                               onSaved: (val) => formData["purpose"] = val,
                             ),
