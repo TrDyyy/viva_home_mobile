@@ -27,18 +27,23 @@ class _DetailsPageState extends State<DetailsPage> {
             icon: Icons.key_outlined,
             title: AppStrings.generalDetails,
             isEnabled: true,
+            nodeKey: "det_gen",
             borders: {BorderEdge.right, BorderEdge.bottom},
             onTap: () {
               // Navigate to general details
-              Navigator.push(context, MaterialPageRoute(
-                builder: (context) => GeneralPage(username: widget.username),
-              ));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GeneralPage(username: widget.username),
+                ),
+              );
             },
           ),
           CardItemConfig(
             icon: Icons.home_outlined,
             title: AppStrings.externalDetails,
             isEnabled: true,
+            nodeKey: "det_gen",
             borders: {BorderEdge.bottom},
             onTap: () {
               // Navigate to external details
@@ -47,6 +52,7 @@ class _DetailsPageState extends State<DetailsPage> {
           CardItemConfig(
             icon: Icons.meeting_room_outlined,
             title: AppStrings.internalDetails,
+            nodeKey: "det_gen",
             isEnabled: true,
             borders: {BorderEdge.right, BorderEdge.bottom},
             onTap: () {
@@ -57,6 +63,7 @@ class _DetailsPageState extends State<DetailsPage> {
             icon: Icons.build_outlined,
             title: AppStrings.servicesDetails,
             isEnabled: true,
+              nodeKey: "det_gen",
             borders: {BorderEdge.bottom},
             onTap: () {
               // Navigate to services
@@ -65,8 +72,9 @@ class _DetailsPageState extends State<DetailsPage> {
           CardItemConfig(
             icon: Icons.add_box_outlined,
             title: AppStrings.additionalDetails,
+              nodeKey: "det_gen",
             isEnabled: true,
-            borders: {}, 
+            borders: {},
             onTap: () {
               // Navigate to additional details
             },

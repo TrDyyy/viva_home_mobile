@@ -40,9 +40,10 @@ class CustomTextField extends StatelessWidget {
     this.maxLines,
     this.maxLength,
   });
+
   @override
   Widget build(BuildContext context) {
-    return FormField<String>(
+    return FormField<String?>(
       validator: validator,
       onSaved: onSaved,
       initialValue: controller?.text,
@@ -60,13 +61,14 @@ class CustomTextField extends StatelessWidget {
               focusNode: focusNode,
               maxLines: maxLines,
               maxLength: maxLength,
-              style: TextStyle(
-                fontSize: AppSizes.font(context, SizeCategory.medium),
-                color: AppColors.textDark,
-                fontWeight: FontWeight.w400,
-              ),
+              style: TextStyle(color: AppColors.textDark),
               decoration: InputDecoration(
                 labelText: hintTextEnable == true ? hintText : null,
+                labelStyle: TextStyle(
+                  fontSize: AppSizes.font(context, SizeCategory.medium),
+                  color: AppColors.darkGray,
+                  fontWeight: FontWeight.w400,
+                ),
                 hintText: hintText,
                 hintStyle: TextStyle(
                   fontSize: AppSizes.font(context, SizeCategory.medium),
@@ -89,12 +91,16 @@ class CustomTextField extends StatelessWidget {
                 fillColor: AppColors.white,
                 enabledBorder: _buildBorder(
                   context,
-                  colorBorder ?? AppColors.lightGray,
+                  field.hasError
+                      ? AppColors.error
+                      : (colorBorder ?? AppColors.lightGray),
                   1,
                 ),
-                focusedBorder: _buildBorder(context, AppColors.primaryTeal, 2),
-                errorBorder: _buildBorder(context, AppColors.error, 1),
-                focusedErrorBorder: _buildBorder(context, AppColors.error, 2),
+                focusedBorder: _buildBorder(
+                  context,
+                  field.hasError ? AppColors.error : AppColors.primaryTeal,
+                  field.hasError ? 2 : 2,
+                ),
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: AppSizes.padding(context, SizeCategory.medium),
                   vertical:
@@ -103,7 +109,7 @@ class CustomTextField extends StatelessWidget {
                 errorStyle: const TextStyle(height: 0),
               ),
               onChanged: (val) {
-                field.didChange(val); 
+                field.didChange(val);
                 if (onChanged != null) {
                   onChanged!(val);
                 }

@@ -91,6 +91,7 @@ class _LoginFormState extends State<LoginForm> {
                 validator: ValidationUtils.validatePassword,
                 focusNode: _passwordFocusNode,
                 textInputAction: TextInputAction.done,
+                maxLines: 1,
                 onFieldSubmitted: (_) {
                   _handleLogin();
                 },

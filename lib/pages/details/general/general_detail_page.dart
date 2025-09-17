@@ -9,11 +9,11 @@ import 'package:viva_home_mobile/models/tree_config.dart';
 import 'package:viva_home_mobile/pages/camera/custom_camera_page.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
 import 'package:viva_home_mobile/utils/custom_button.dart';
-import 'package:viva_home_mobile/utils/custom_combobox.dart';
 import 'package:viva_home_mobile/utils/custom_text_field.dart';
 import 'package:viva_home_mobile/utils/radio_group.dart';
 import 'package:viva_home_mobile/utils/validation.dart';
 import 'package:viva_home_mobile/widgets/base_page_widget.dart';
+import 'package:viva_home_mobile/widgets/custom_combobox.dart';
 import 'package:viva_home_mobile/widgets/form_widget.dart';
 import 'package:viva_home_mobile/widgets/upload_success_card.dart';
 
@@ -39,9 +39,51 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
   bool hasTitle = false;
   bool hasFirstName = false;
   bool hasSurname = false;
+  bool hasStatusHouse = false;
+  bool hasTitleFormInfo = false;
+  bool hasFirstNameFormInfo = false;
+  bool hasSurnameFormInfo = false;
+  bool hasAddressLine1 = false;
+  bool hasAddressLine2 = false;
+  bool hasTown = false;
+  bool hasPostcode = false;
+  bool hasLocation = false;
+  bool hasOwnershipType = false;
+  bool hasTermRemainingYears = false;
+  bool hasEpcNo = false;
+  bool hasProSize = false;
+  bool isHasImageUpload = false;
+  bool hasDevCompany = false;
+  bool hasNameOfDev = false;
+  bool hasPhoneOffice = false;
+  bool hasEmailOffice = false;
+  bool hasPhone = false;
+  bool hasEmail = false;
 
   bool shouldCheckIntentOfValuation() => hasPurpose;
   bool shouldCheckHomeowner() => hasTitle && hasFirstName && hasSurname;
+  bool shouldCheckFormInfo() =>
+      (isHomeowner == true) ||
+      (hasTitleFormInfo && hasFirstNameFormInfo && hasSurnameFormInfo);
+  bool shouldCheckAddressInfo() =>
+      hasAddressLine1 && hasAddressLine2 && hasTown && hasPostcode;
+  bool shouldCheckTenure() =>
+      hasOwnershipType &&
+      hasTermRemainingYears &&
+      (hasGroundRentServiceCharge != null);
+  bool shouldCheckEfficiencies() =>
+      hasEpcNo && energyEfficienciesOption != null;
+  bool shouldCheckProSize() => hasProSize;
+  bool shouldCheckNewProperty() =>
+      (isNewBuild == false) ||
+      (isHasUKFinanceDisclosure == true && isHasImageUpload == true) ||
+      (isHasUKFinanceDisclosure == false &&
+          hasDevCompany &&
+          hasNameOfDev &&
+          hasPhoneOffice &&
+          hasEmailOffice &&
+          hasPhone &&
+          hasEmail);
 
   void _updateNodeWithConditions(String nodeKey) {
     late bool shouldCheck;
@@ -49,14 +91,34 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
     switch (nodeKey) {
       case "det_gen_iov":
         shouldCheck = shouldCheckIntentOfValuation();
+        break;
       case "det_gen_homeowner":
         shouldCheck = shouldCheckHomeowner();
         break;
-
+      case "det_gen_formInfo":
+        shouldCheck = shouldCheckFormInfo();
+        break;
+      case "det_gen_proAddress":
+        shouldCheck = shouldCheckAddressInfo();
+        break;
+      case "det_gen_locality":
+        shouldCheck = hasLocation;
+        break;
+      case "det_gen_tenure":
+        shouldCheck = shouldCheckTenure();
+        break;
+      case "det_gen_efficiences":
+        shouldCheck = shouldCheckEfficiencies();
+        break;
+      case "det_gen_proSize":
+        shouldCheck = hasProSize;
+        break;
+      case "det_gen_newProperty":
+        shouldCheck = shouldCheckNewProperty();
+        break;
       default:
         shouldCheck = false;
     }
-
     context.read<GlobalTreeManager>().toggleNode(nodeKey, shouldCheck);
   }
 
@@ -72,6 +134,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
   String? selectedFileName;
   bool showUploadSuccess = false;
 
+  //Call Initialize Tree Data (Remove when save data for real)
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -137,8 +200,6 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
     return BasePageWidget(
       config: PageConfig(
         title: 'General',
-        username: '',
-        cards: [],
         isAppBarVisible: true,
         customBody: Padding(
           padding: EdgeInsets.only(
@@ -151,6 +212,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                   key: _formKey,
                   child: FormSection(
                     children: [
+
                       // Intent of valuation section
                       FormFieldWrapper(
                         label: "Intent of valuation",
@@ -185,7 +247,9 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               highlightText: "Other",
                               description: "please specify:",
                               colorBorder: AppColors.dark,
-                              onSaved: (val) => formData["other_purpose"] = val,
+                              onSaved: (val) {
+                                if (!hasPurpose) formData["other_purpose"] = val;
+                              },
                             ),
                           ],
                         ),
@@ -256,7 +320,9 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                   formData["surname_$index"] = val,
                               validator: ValidationUtils.required,
                               onChanged: (val) {
-                                setState(() => hasSurname = val!.trim().isNotEmpty);
+                                setState(
+                                  () => hasSurname = val!.trim().isNotEmpty,
+                                );
                                 _updateNodeWithConditions("det_gen_homeowner");
                               },
                             ),
@@ -266,7 +332,6 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                 SizeCategory.small,
                               ),
                             ),
-
                             //List of owner fields
                             ListView.separated(
                               shrinkWrap: true,
@@ -313,6 +378,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       // Form information section
                       FormFieldWrapper(
                         label: "Form information",
+                        nodeKey: "det_gen_formInfo",
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -328,6 +394,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                 setState(() {
                                   isHomeowner = value;
                                 });
+                                _updateNodeWithConditions("det_gen_formInfo");
                               },
                               onSaved: (val) => formData["is_homeowner"] = val,
                               validator:
@@ -359,7 +426,14 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                             buildComboBoxField(
                               label: "Status to house:",
                               items: ["Surveyor", "Agent", "Owner", "Investor"],
-                              onChanged: (value) {},
+                              onChanged: (val) {
+                                if (isHomeowner == false) {
+                                  setState(
+                                    () => hasStatusHouse = val!.isNotEmpty,
+                                  );
+                                  _updateNodeWithConditions("det_gen_formInfo");
+                                }
+                              },
                               onSaved: (val) => formData["status_house"] = val,
                               validator: (val) {
                                 if (isHomeowner == false) {
@@ -372,6 +446,16 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               label: "Title:",
                               hintText: "Mr / Mrs",
                               onSaved: (val) => formData["title_name"] = val,
+                              onChanged: (val) {
+                                if (isHomeowner == false) {
+                                  setState(
+                                    () => hasTitleFormInfo = val!
+                                        .trim()
+                                        .isNotEmpty,
+                                  );
+                                  _updateNodeWithConditions("det_gen_formInfo");
+                                }
+                              },
                               validator: (val) {
                                 if (isHomeowner == false) {
                                   return ValidationUtils.required(val);
@@ -384,6 +468,16 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               hintText: "John...",
                               onSaved: (val) =>
                                   formData["first_name_nonowner"] = val,
+                              onChanged: (val) {
+                                if (isHomeowner == false) {
+                                  setState(
+                                    () => hasFirstNameFormInfo = val!
+                                        .trim()
+                                        .isNotEmpty,
+                                  );
+                                  _updateNodeWithConditions("det_gen_formInfo");
+                                }
+                              },
                               validator: (val) {
                                 if (isHomeowner == false) {
                                   return ValidationUtils.required(val);
@@ -396,6 +490,16 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               hintText: "Doe...",
                               onSaved: (val) =>
                                   formData["surname_nonowner"] = val,
+                              onChanged: (val) {
+                                if (isHomeowner == false) {
+                                  setState(
+                                    () => hasSurnameFormInfo = val!
+                                        .trim()
+                                        .isNotEmpty,
+                                  );
+                                  _updateNodeWithConditions("det_gen_formInfo");
+                                }
+                              },
                               validator: (val) {
                                 if (isHomeowner == false) {
                                   return ValidationUtils.required(val);
@@ -409,6 +513,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       // Property Address section
                       FormFieldWrapper(
                         label: "Property Address",
+                        nodeKey: "det_gen_proAddress",
                         child: Column(
                           children: [
                             buildCustomTextField(
@@ -416,6 +521,13 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               hintText: "...",
                               onSaved: (val) =>
                                   formData["address_line_1"] = val,
+                              onChanged: (val) {
+                                setState(
+                                  () =>
+                                      hasAddressLine1 = val!.trim().isNotEmpty,
+                                );
+                                _updateNodeWithConditions("det_gen_proAddress");
+                              },
                               validator: ValidationUtils.required,
                             ),
                             buildCustomTextField(
@@ -423,18 +535,37 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               hintText: "...",
                               onSaved: (val) =>
                                   formData["address_line_2"] = val,
+                              onChanged: (val) {
+                                setState(
+                                  () =>
+                                      hasAddressLine2 = val!.trim().isNotEmpty,
+                                );
+                                _updateNodeWithConditions("det_gen_proAddress");
+                              },
                               validator: ValidationUtils.required,
                             ),
                             buildCustomTextField(
                               label: "Town / City:",
                               hintText: "...",
                               onSaved: (val) => formData["town_city"] = val,
+                              onChanged: (val) {
+                                setState(
+                                  () => hasTown = val!.trim().isNotEmpty,
+                                );
+                                _updateNodeWithConditions("det_gen_proAddress");
+                              },
                               validator: ValidationUtils.required,
                             ),
                             buildCustomTextField(
                               label: "Post Code:",
                               hintText: "...",
                               onSaved: (val) => formData["post_code"] = val,
+                              onChanged: (val) {
+                                setState(
+                                  () => hasPostcode = val!.trim().isNotEmpty,
+                                );
+                                _updateNodeWithConditions("det_gen_proAddress");
+                              },
                               validator: ValidationUtils.required,
                             ),
                           ],
@@ -444,13 +575,20 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       // Locality section
                       FormFieldWrapper(
                         label: "Locality",
+                        nodeKey: "det_gen_locality",
                         child: Column(
                           children: [
                             buildCustomTextField(
                               label: "Location:",
                               hintText: "Urban",
-                              enabled: false,
                               onSaved: (val) => formData["location"] = val,
+                              onChanged: (val) {
+                                setState(
+                                  () => hasLocation = val!.trim().isNotEmpty,
+                                );
+                                _updateNodeWithConditions("det_gen_locality");
+                              },
+                              validator: ValidationUtils.required,
                             ),
                           ],
                         ),
@@ -459,6 +597,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       // Tenure section
                       FormFieldWrapper(
                         label: "Tenure",
+                        nodeKey: "det_gen_tenure",
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -472,7 +611,12 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                 "< 85 years leasehold",
                                 "> 85 years leasehold",
                               ],
-                              onChanged: (val) {},
+                              onChanged: (val) {
+                                setState(
+                                  () => hasOwnershipType = val!.isNotEmpty,
+                                );
+                                _updateNodeWithConditions("det_gen_tenure");
+                              },
                               validator: ValidationUtils.required,
                               onSaved: (val) =>
                                   formData["ownership_type"] = val,
@@ -483,6 +627,14 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               keyboardType: TextInputType.numberWithOptions(),
                               onSaved: (val) =>
                                   formData["term_remaining_years"] = val,
+                              onChanged: (val) {
+                                setState(() {
+                                  hasTermRemainingYears = val!
+                                      .trim()
+                                      .isNotEmpty;
+                                });
+                                _updateNodeWithConditions("det_gen_tenure");
+                              },
                               validator: ValidationUtils.number,
                             ),
                             buildRadioField<bool>(
@@ -498,6 +650,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                 setState(() {
                                   hasGroundRentServiceCharge = value;
                                 });
+                                _updateNodeWithConditions("det_gen_tenure");
                               },
                               validator:
                                   ValidationUtils.validateRequiredOption<bool>,
@@ -521,6 +674,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       // Efficiencies section
                       FormFieldWrapper(
                         label: "Efficiences",
+                        nodeKey: "det_gen_efficiences",
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -544,9 +698,13 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               groupValue: energyEfficienciesOption,
                               onChanged: (val) {
                                 setState(() => energyEfficienciesOption = val);
+                                _updateNodeWithConditions(
+                                  "det_gen_efficiences",
+                                );
                               },
                               onSaved: (val) =>
                                   formData["energyEfficienciesOption"] = val,
+                              validator: (val) => ValidationUtils.validateRequiredOption<String>(val),
                             ),
                             buildOtherSpecifyField(
                               context: context,
@@ -616,6 +774,14 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                   validator: ValidationUtils.required,
                                   onSaved: (val) =>
                                       formData["epc_rating"] = val,
+                                  onChanged: (val) {
+                                    setState(
+                                      () => hasEpcNo = val!.trim().isNotEmpty,
+                                    );
+                                    _updateNodeWithConditions(
+                                      "det_gen_efficiences",
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -626,6 +792,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       // Property Size section
                       FormFieldWrapper(
                         label: "Property Size",
+                        nodeKey: "det_gen_proSize",
                         subtitle: "(If applicable)",
                         child: Column(
                           children: [
@@ -684,6 +851,12 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               keyboardType: TextInputType.number,
                               onSaved: (val) =>
                                   formData["property_footprint_size"] = val,
+                              onChanged: (val) => {
+                                setState(() {
+                                  hasProSize = val!.trim().isNotEmpty;
+                                }),
+                                _updateNodeWithConditions("det_gen_proSize"),
+                              },
                               validator: ValidationUtils.number,
                               colorBorder: AppColors.darkGray,
                               suffixIcon: Padding(
@@ -707,6 +880,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       // New Build section
                       FormFieldWrapper(
                         label: "New Build:",
+                        nodeKey: "det_gen_newProperty",
                         subtitle: '(If applicable)',
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -723,6 +897,9 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                 setState(() {
                                   isNewBuild = value;
                                 });
+                                _updateNodeWithConditions(
+                                  "det_gen_newProperty",
+                                );
                               },
                               validator:
                                   ValidationUtils.validateRequiredOption<bool>,
@@ -795,9 +972,14 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                   ],
                                   groupValue: isHasUKFinanceDisclosure,
                                   onChanged: (value) {
-                                    setState(() {
-                                      isHasUKFinanceDisclosure = value;
-                                    });
+                                    if (isNewBuild == true) {
+                                      setState(() {
+                                        isHasUKFinanceDisclosure = value;
+                                      });
+                                      _updateNodeWithConditions(
+                                        "det_gen_newProperty",
+                                      );
+                                    }
                                   },
                                   validator: (value) {
                                     if (isNewBuild == true) {
@@ -895,6 +1077,12 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                                       await _pickImageFromCamera();
                                                   if (file != null) {
                                                     field.didChange(file);
+                                                    setState(() {
+                                                      isHasImageUpload = true;
+                                                    });
+                                                    _updateNodeWithConditions(
+                                                      "det_gen_newProperty",
+                                                    );
                                                   }
                                                 },
                                                 child: const Icon(
@@ -915,6 +1103,12 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                                       await _pickImageFromGallery();
                                                   if (file != null) {
                                                     field.didChange(file);
+                                                    setState(() {
+                                                      isHasImageUpload = true;
+                                                    });
+                                                    _updateNodeWithConditions(
+                                                      "det_gen_newProperty",
+                                                    );
                                                   }
                                                 },
                                                 child: const Icon(
@@ -947,7 +1141,6 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                               ),
                                             ),
                                           ),
-
                                         // Upload Success Card (preview)
                                         if (field.value != null) ...[
                                           Padding(
@@ -962,8 +1155,15 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                                   .split("/")
                                                   .last,
                                               imageFile: field.value,
-                                              onClose: () =>
-                                                  field.didChange(null),
+                                              onClose: () => {
+                                                field.didChange(null),
+                                                setState(() {
+                                                  isHasImageUpload = false;
+                                                }),
+                                                _updateNodeWithConditions(
+                                                  "det_gen_newProperty",
+                                                ),
+                                              },
                                             ),
                                           ),
                                         ],
@@ -972,6 +1172,12 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                   },
                                 ),
                               ],
+                            ),
+                            SizedBox(
+                              height: AppSizes.padding(
+                                context,
+                                SizeCategory.small,
+                              ),
                             ),
                             buildOtherSpecifyField(
                               context: context,
@@ -994,7 +1200,16 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                 "Berkeley Group",
                                 "Unknown",
                               ],
-                              onChanged: (value) {},
+                              onChanged: (value) {
+                                if (isHasUKFinanceDisclosure == false) {
+                                  setState(
+                                    () => hasDevCompany = value!.isNotEmpty,
+                                  );
+                                  _updateNodeWithConditions(
+                                    "det_gen_newProperty",
+                                  );
+                                }
+                              },
                               validator: (value) {
                                 if (isHasUKFinanceDisclosure == false) {
                                   return ValidationUtils.required(value);
@@ -1014,6 +1229,17 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               },
                               onSaved: (val) =>
                                   formData["development_name"] = val,
+                              onChanged: (value) {
+                                if (isHasUKFinanceDisclosure == false) {
+                                  setState(
+                                    () =>
+                                        hasNameOfDev = value!.trim().isNotEmpty,
+                                  );
+                                  _updateNodeWithConditions(
+                                    "det_gen_newProperty",
+                                  );
+                                }
+                              },
                             ),
                             buildCustomTextField(
                               label: "Phone Number (Site Office):",
@@ -1027,6 +1253,18 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               },
                               onSaved: (val) =>
                                   formData["phone_site_office"] = val,
+                              onChanged: (value) {
+                                if (isHasUKFinanceDisclosure == false) {
+                                  setState(
+                                    () => hasPhoneOffice = value!
+                                        .trim()
+                                        .isNotEmpty,
+                                  );
+                                  _updateNodeWithConditions(
+                                    "det_gen_newProperty",
+                                  );
+                                }
+                              },
                             ),
                             buildCustomTextField(
                               label: "Email Address (Site Office):",
@@ -1039,6 +1277,18 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               },
                               onSaved: (val) =>
                                   formData["email_site_office"] = val,
+                              onChanged: (value) {
+                                if (isHasUKFinanceDisclosure == false) {
+                                  setState(
+                                    () => hasEmailOffice = value!
+                                        .trim()
+                                        .isNotEmpty,
+                                  );
+                                  _updateNodeWithConditions(
+                                    "det_gen_newProperty",
+                                  );
+                                }
+                              },
                             ),
                             buildCustomTextField(
                               label: "Phone Number:",
@@ -1051,6 +1301,16 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                 return null;
                               },
                               onSaved: (val) => formData["phone"] = val,
+                              onChanged: (value) {
+                                if (isHasUKFinanceDisclosure == false) {
+                                  setState(
+                                    () => hasPhone = value!.trim().isNotEmpty,
+                                  );
+                                  _updateNodeWithConditions(
+                                    "det_gen_newProperty",
+                                  );
+                                }
+                              },
                             ),
                             buildCustomTextField(
                               label: "Email Address:",
@@ -1062,6 +1322,16 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                                 return null;
                               },
                               onSaved: (val) => formData["email"] = val,
+                              onChanged: (value) {
+                                if (isHasUKFinanceDisclosure == false) {
+                                  setState(
+                                    () => hasEmail = value!.trim().isNotEmpty,
+                                  );
+                                  _updateNodeWithConditions(
+                                    "det_gen_newProperty",
+                                  );
+                                }
+                              },
                             ),
                           ],
                         ),

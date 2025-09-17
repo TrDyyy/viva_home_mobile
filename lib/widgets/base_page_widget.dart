@@ -16,12 +16,14 @@ class CardItemConfig {
   final bool isEnabled;
   final VoidCallback onTap;
   final Set<BorderEdge>? borders; // For grid layout borders
+  final String nodeKey;
 
   const CardItemConfig({
     required this.icon,
     required this.title,
     required this.isEnabled,
     required this.onTap,
+    required this.nodeKey,
     this.borders,
   });
 }
@@ -83,21 +85,23 @@ class BasePageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: config.isAppBarVisible  == true ? AppBar(
-        title: Text(config.title.toUpperCase()),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        centerTitle: true,
-        backgroundColor: AppColors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close, color: AppColors.darkTeal),
-            onPressed: () {
-              // Handle close action
-            },
-          ),
-        ],
-      ) :null,
+      appBar: config.isAppBarVisible == true
+          ? AppBar(
+              title: Text(config.title.toUpperCase()),
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              centerTitle: true,
+              backgroundColor: AppColors.white,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.close, color: AppColors.darkTeal),
+                  onPressed: () {
+                    // Handle close action
+                  },
+                ),
+              ],
+            )
+          : null,
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
@@ -115,7 +119,9 @@ class BasePageWidget extends StatelessWidget {
               child: Column(
                 children: [
                   // Header area
-                  config.isAppBarVisible == false ? _buildHeader(context) : Container(),
+                  config.isAppBarVisible == false
+                      ? _buildHeader(context)
+                      : Container(),
 
                   // Content area
                   Expanded(
@@ -496,7 +502,10 @@ class BasePageWidget extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-              IndividualCheckboxWidget.standalone(nodeKey: item.nodeKey ,showtitle: false)
+                IndividualCheckboxWidget.standalone(
+                  nodeKey: item.nodeKey,
+                  showtitle: false,
+                ),
               ],
             ),
           ),
@@ -508,18 +517,36 @@ class BasePageWidget extends StatelessWidget {
   Widget _buildGridLayout(BuildContext context) {
     return Wrap(
       alignment: WrapAlignment.center,
-      children: config.cards != null ? config.cards!.map((card) {
-        return SizedBox(
-          width: AppSizes.screenWidth(context) / 2.3,
-          child: _buildCard(context, card, CardLayoutType.grid),
-        );
-      }).toList() : [],
+      children: config.cards != null
+          ? config.cards!.map((card) {
+              return SizedBox(
+                width: AppSizes.screenWidth(context) / 2.3,
+                child: _buildCard(
+                  context,
+                  card.nodeKey,
+                  card,
+                  CardLayoutType.grid,
+                ),
+              );
+            }).toList()
+          : [],
     );
   }
 
   Widget _buildListLayout(BuildContext context) {
     return Column(
-      children: config.cards != null ? config.cards!.map((card) => _buildCard(context, card, CardLayoutType.list)).toList() : [],
+      children: config.cards != null
+          ? config.cards!
+                .map(
+                  (card) => _buildCard(
+                    context,
+                    card.nodeKey,
+                    card,
+                    CardLayoutType.list,
+                  ),
+                )
+                .toList()
+          : [],
     );
   }
 
@@ -547,6 +574,7 @@ class BasePageWidget extends StatelessWidget {
 
   Widget _buildCard(
     BuildContext context,
+    String? nodeKey,
     CardItemConfig card,
     CardLayoutType layoutType,
   ) {
@@ -621,18 +649,11 @@ class BasePageWidget extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      width: isGrid
-                          ? AppSizes.padding(context, SizeCategory.medium)
-                          : AppSizes.padding(context, SizeCategory.small),
+                      width: AppSizes.padding(context, SizeCategory.small),
                     ),
-                    Icon(
-                      isGrid
-                          ? Icons.check_box_outline_blank
-                          : Icons.square_outlined,
-                      size: AppSizes.icon(context, SizeCategory.small),
-                      color: card.isEnabled
-                          ? AppColors.primaryTeal
-                          : AppColors.darkGray,
+                    IndividualCheckboxWidget(
+                      nodeKey: nodeKey!,
+                      showtitle: false,
                     ),
                   ],
                 ),

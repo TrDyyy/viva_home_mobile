@@ -22,7 +22,7 @@ class UploadSuccessCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.transparent,
         border: Border.all(color: AppColors.primaryTeal),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppSizes.radius(context, SizeCategory.medium)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,10 +30,10 @@ class UploadSuccessCard extends StatelessWidget {
           Row(
             children: [
               // Success Icon
-              const Icon(
+              Icon(
                 Icons.check_circle,
                 color: AppColors.primaryTeal,
-                size: 24,
+                size: AppSizes.icon(context, SizeCategory.medium),
               ),
               SizedBox(width: AppSizes.padding(context, SizeCategory.small)),
 
@@ -42,17 +42,17 @@ class UploadSuccessCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Upload successful!",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppColors.primaryTeal,
-                        fontSize: 14,
+                        fontSize: AppSizes.font(context, SizeCategory.medium),
                       ),
                     ),
                     Text(
                       fileName,
-                      style: TextStyle(fontSize: 12, color: AppColors.darkTeal),
+                      style: TextStyle(fontSize: AppSizes.font(context, SizeCategory.small), color: AppColors.darkTeal),
                     ),
                   ],
                 ),
@@ -80,7 +80,7 @@ class UploadSuccessCard extends StatelessWidget {
                         ),
                       ),
                       child: Hero(
-                        tag: "generalUploadImage",
+                        tag: "form_upload_image",
                         child: Image.file(imageFile!, fit: BoxFit.contain),
                       ),
                     ),
@@ -88,18 +88,18 @@ class UploadSuccessCard extends StatelessWidget {
                       bottom: 2,
                       right: 2,
                       child: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.black54,
+                        radius: AppSizes.radius(context, SizeCategory.medium),
+                        backgroundColor: AppColors.dark,
                         child: InkWell(
                           onTap: () => showImageFullScreen(
                             context,
-                            tag: "generalUploadImage",
+                            tag: "form_upload_image",
                             image: FileImage(imageFile!),
                           ),
                           child: Icon(
                             Icons.fullscreen,
-                            color: Colors.white,
-                            size: 14,
+                            color: AppColors.white,
+                            size: AppSizes.icon(context, SizeCategory.small),
                           ),
                         ),
                       ),
@@ -107,7 +107,6 @@ class UploadSuccessCard extends StatelessWidget {
                   ],
                 ),
               ],
-
               // Close Button
               SizedBox(width: AppSizes.padding(context, SizeCategory.small)),
               InkWell(
