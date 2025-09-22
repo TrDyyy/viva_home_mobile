@@ -13,7 +13,7 @@ import 'package:viva_home_mobile/utils/custom_text_field.dart';
 import 'package:viva_home_mobile/utils/radio_group.dart';
 import 'package:viva_home_mobile/utils/validation.dart';
 import 'package:viva_home_mobile/widgets/base_page_widget.dart';
-import 'package:viva_home_mobile/widgets/custom_combobox.dart';
+import 'package:viva_home_mobile/widgets/combobox_demo.dart';
 import 'package:viva_home_mobile/widgets/form_widget.dart';
 import 'package:viva_home_mobile/widgets/upload_success_card.dart';
 
@@ -179,6 +179,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
   }
 
   Future<File?> _pickImageFromCamera() async {
+    FocusScope.of(context).unfocus();
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => CustomCameraPage()),
@@ -190,6 +191,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
   }
 
   Future<File?> _pickImageFromGallery() async {
+    FocusScope.of(context).unfocus();
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     return image != null ? File(image.path) : null;
@@ -212,7 +214,6 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                   key: _formKey,
                   child: FormSection(
                     children: [
-
                       // Intent of valuation section
                       FormFieldWrapper(
                         label: "Intent of valuation",
@@ -248,7 +249,9 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               description: "please specify:",
                               colorBorder: AppColors.dark,
                               onSaved: (val) {
-                                if (!hasPurpose) formData["other_purpose"] = val;
+                                if (!hasPurpose) {
+                                  formData["other_purpose"] = val;
+                                }
                               },
                             ),
                           ],
@@ -704,7 +707,10 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                               },
                               onSaved: (val) =>
                                   formData["energyEfficienciesOption"] = val,
-                              validator: (val) => ValidationUtils.validateRequiredOption<String>(val),
+                              validator: (val) =>
+                                  ValidationUtils.validateRequiredOption<
+                                    String
+                                  >(val),
                             ),
                             buildOtherSpecifyField(
                               context: context,

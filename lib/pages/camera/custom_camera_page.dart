@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
 import 'package:viva_home_mobile/pages/camera/photo_preview_page.dart';
 import 'package:viva_home_mobile/widgets/gallery_thumbnail.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CustomCameraPage extends StatefulWidget {
   const CustomCameraPage({super.key});
@@ -28,17 +29,82 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
   }
 
   Future<void> _initializeCamera() async {
+  final status = await Permission.camera.request();
+  if (status.isGranted) {
+    cameras = await availableCameras();
+    if (cameras!.isNotEmpty) {
+      _controller = CameraController(cameras![0], ResolutionPreset.high);
+      await _controller!.initialize();
+      if (mounted) {
+        setState(() {
+          isCameraInitialized = true;
+        });
+      }
+    }
+  } else {
+    debugPrint('Camera permission denied');
+  }
+}
+
+  Future<void> _switchCamera() async {
+    if (cameras == null || cameras!.isEmpty) return;
+    selectedCameraIndex = (selectedCameraIndex + 1) % cameras!.length;
+    final cameraDescription = cameras![selectedCameraIndex];
+    await _controller?.dispose();
+    _controller = CameraController(cameraDescription, ResolutionPreset.high);
+
     try {
-      cameras = await availableCameras();
-      if (cameras!.isNotEmpty) {
-        _controller = CameraController(cameras![0], ResolutionPreset.high);
-        await _controller!.initialize();
+      await _controller!.initialize();
+      if (mounted) {
         setState(() {
           isCameraInitialized = true;
         });
       }
     } catch (e) {
-      debugPrint('Error initializing camera: $e');
+      debugPrint('Error switching camera: $e');
+    }
+  }
+
+  Future<void> _capturePhoto() async {
+    if (_controller == null || !_controller!.value.isInitialized) return;
+
+    try {
+      final image = await _controller!.takePicture();
+      setState(() {
+        capturedImage = image;
+      });
+      _showPreview();
+    } catch (e) {
+      debugPrint('Error capturing photo: $e');
+    }
+  }
+
+  Future<void> _pickFromGallery() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        capturedImage = image;
+      });
+      _showPreview();
+    }
+  }
+
+  void _showPreview() {
+    if (capturedImage != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              PhotoPreviewPage(imagePath: capturedImage!.path),
+        ),
+      ).then((result) {
+        if (result is File) {
+          // ignore: use_build_context_synchronously
+          Navigator.pop(context, result);
+        }
+      });
     }
   }
 
@@ -130,80 +196,25 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
             bottom: 10,
             left: 10,
             child: Padding(
-              padding: EdgeInsets.all(AppSizes.padding(context, SizeCategory.small)),
+              padding: EdgeInsets.all(
+                AppSizes.padding(context, SizeCategory.small),
+              ),
               child: Row(
                 children: [
                   GalleryThumbnail(onTap: _pickFromGallery),
-                  SizedBox(width: AppSizes.padding(context, SizeCategory.small)),
-                  Text("Image Library", style: TextStyle(color: AppColors.white)),
+                  SizedBox(
+                    width: AppSizes.padding(context, SizeCategory.small),
+                  ),
+                  Text(
+                    "Image Library",
+                    style: TextStyle(color: AppColors.white),
+                  ),
                 ],
               ),
-            )
+            ),
           ),
         ],
       ),
     );
-  }
-
-  Future<void> _capturePhoto() async {
-    if (_controller == null || !_controller!.value.isInitialized) return;
-
-    try {
-      final image = await _controller!.takePicture();
-      setState(() {
-        capturedImage = image;
-      });
-      _showPreview();
-    } catch (e) {
-      debugPrint('Error capturing photo: $e');
-    }
-  }
-
-  Future<void> _pickFromGallery() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        capturedImage = image;
-      });
-      _showPreview();
-    }
-  }
-
-  void _showPreview() {
-    if (capturedImage != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              PhotoPreviewPage(imagePath: capturedImage!.path),
-        ),
-      ).then((result) {
-        if (result is File) {
-          // ignore: use_build_context_synchronously
-          Navigator.pop(context, result);
-        }
-      });
-    }
-  }
-
-  Future<void> _switchCamera() async {
-    if (cameras == null || cameras!.isEmpty) return;
-    selectedCameraIndex = (selectedCameraIndex + 1) % cameras!.length;
-    final cameraDescription = cameras![selectedCameraIndex];
-    await _controller?.dispose();
-    _controller = CameraController(cameraDescription, ResolutionPreset.high);
-
-    try {
-      await _controller!.initialize();
-      if (mounted) {
-        setState(() {
-          isCameraInitialized = true;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error switching camera: $e');
-    }
   }
 }

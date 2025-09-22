@@ -49,14 +49,15 @@ class _ComboBoxFieldState<T> extends State<_ComboBoxField<T>> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomDropdown<T>(
-              hintText: widget.hint,
+            CustomDropdown<T>.search(
               items: widget.items,
               onChanged: (T? value) {
                 widget.field.didChange(value);
                 widget.onChanged?.call(value);
               },
+              hintText: "Please select an option",
               initialItem: widget.field.value,
+              excludeSelected: false,
               decoration: CustomDropdownDecoration(
                 closedFillColor: AppColors.white,
                 expandedFillColor: AppColors.white,
@@ -94,42 +95,64 @@ class _ComboBoxFieldState<T> extends State<_ComboBoxField<T>> {
               ),
               listItemBuilder: (context, item, isSelected, onItemSelect) {
                 final isLast = item == widget.items.last;
-                return Padding(
-                  padding: EdgeInsets.zero,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.lightGray
-                          : Colors.transparent,
-                      border: isLast
-                          ? null
-                          : Border(
-                              bottom: BorderSide(
-                                color: AppColors.dark,
-                                width: 0.5,
+                final isCurrentSelected = widget.field.value == item;
+
+                return Container(
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.lightGray
+                        : Colors.transparent,
+                    border: isLast
+                        ? null
+                        : Border(
+                            bottom: BorderSide(
+                              color: AppColors.dark,
+                              width: 0.5,
+                            ),
+                          ),
+                  ),
+                  child: InkWell(
+                    onTap: onItemSelect,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppSizes.padding(
+                          context,
+                          SizeCategory.small,
+                        ),
+                        vertical: AppSizes.padding(
+                          context,
+                          SizeCategory.small,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.toString(),
+                              style: TextStyle(
+                                fontSize: AppSizes.font(
+                                  context,
+                                  SizeCategory.large,
+                                ),
+                                fontWeight: isCurrentSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                                color: isCurrentSelected
+                                    ? AppColors.primaryTeal
+                                    : AppColors.dark,
                               ),
                             ),
-                    ),
-                    child: InkWell(
-                      onTap: onItemSelect,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: AppSizes.padding(
-                            context,
-                            SizeCategory.medium,
                           ),
-                        ),
-                        child: Text(
-                          item.toString(),
-                          style: TextStyle(
-                            fontSize: AppSizes.font(
-                              context,
-                              SizeCategory.large,
+                          if (isCurrentSelected)
+                            Container(
+                              margin: EdgeInsets.only(left: AppSizes.padding(context, SizeCategory.small)),
+                              child: Icon(
+                                Icons.check_circle,
+                                color: AppColors.primaryTeal,
+                                size: 20,
+                              ),
                             ),
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.dark,
-                          ),
-                        ),
+                        ],
                       ),
                     ),
                   ),

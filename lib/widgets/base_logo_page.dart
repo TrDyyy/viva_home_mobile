@@ -9,7 +9,7 @@ class BaseLogoPage extends StatelessWidget {
   final double? logoWidth;
   final double? logoHeight;
   final String heroTag;
-  
+
   const BaseLogoPage({
     super.key,
     required this.child,
@@ -25,12 +25,15 @@ class BaseLogoPage extends StatelessWidget {
     final defaultPadding = EdgeInsets.symmetric(
       horizontal: AppSizes.padding(context, SizeCategory.large),
     );
-    
+
     final logoContainer = Hero(
       tag: heroTag,
       child: Container(
-        width: logoWidth ?? AppSizes.padding(context, SizeCategory.xxxlarge) * 4,
-        height: logoHeight ?? AppSizes.padding(context, SizeCategory.xxxlarge) * 2.5,
+        width:
+            logoWidth ?? AppSizes.padding(context, SizeCategory.xxxlarge) * 4,
+        height:
+            logoHeight ??
+            AppSizes.padding(context, SizeCategory.xxxlarge) * 2.5,
         decoration: const BoxDecoration(
           shape: BoxShape.rectangle,
           image: DecorationImage(
@@ -50,24 +53,36 @@ class BaseLogoPage extends StatelessWidget {
         child,
       ],
     );
-
     return Scaffold(
-      resizeToAvoidBottomInset: false, // Prevent background from moving
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/background1.png"),
-            fit: BoxFit.cover,
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          Positioned.directional(
+            textDirection: TextDirection.ltr,
+            child: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/background1.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
           ),
-        ),
-        child: Padding(
-          padding: padding ?? defaultPadding,
-          child: isScrollable 
-            ? SingleChildScrollView(child: Center(child: content))
-            : Center(child: content),
-        ),
+
+          SafeArea(
+            child: Padding(
+              padding: padding ?? defaultPadding,
+              child: isScrollable
+                  ? SingleChildScrollView(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
+                      child: Center(child: content),
+                    )
+                  : Center(child: content),
+            ),
+          ),
+        ],
       ),
     );
   }
