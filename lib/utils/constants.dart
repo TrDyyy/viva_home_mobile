@@ -11,6 +11,7 @@ class AppColors {
   static const Color accent = Color(0xFF34495E);
   static const Color transparent = Colors.transparent;
   static const Color error = Color(0xFFFF3D00);
+  static const Color dark = Color.fromARGB(185, 0, 0, 0);
 }
 
 class AppStrings {

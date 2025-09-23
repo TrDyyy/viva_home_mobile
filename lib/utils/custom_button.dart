@@ -12,6 +12,7 @@ class CustomButton extends StatelessWidget {
   final Color? backgroundColor;
   final Color? foregroundColor;
   final Color? borderColor;
+  final Widget? icon;
 
   const CustomButton({
     super.key,
@@ -25,6 +26,7 @@ class CustomButton extends StatelessWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.borderColor,
+    this.icon,
   });
 
   @override
@@ -73,12 +75,22 @@ class CustomButton extends StatelessWidget {
       );
     }
 
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: AppSizes.font(context, SizeCategory.large),
-        fontWeight: FontWeight.w600,
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: AppSizes.font(context, SizeCategory.large),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(width: icon != null ? AppSizes.padding(context, SizeCategory.medium) : 0),
+        if (icon != null) ...[
+          icon!,
+          SizedBox(width: AppSizes.padding(context, SizeCategory.small)),
+        ],
+      ],
     );
   }
 }
