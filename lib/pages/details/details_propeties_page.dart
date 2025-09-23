@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:viva_home_mobile/pages/details/external/external_page.dart';
 import 'package:viva_home_mobile/pages/details/general/general_page.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
 import 'package:viva_home_mobile/widgets/base_page_widget.dart';
@@ -46,7 +47,12 @@ class _DetailsPageState extends State<DetailsPage> {
             nodeKey: "det_gen",
             borders: {BorderEdge.bottom},
             onTap: () {
-              // Navigate to external details
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ExternalPage(username: widget.username),
+                ),
+              );
             },
           ),
           CardItemConfig(
@@ -63,7 +69,7 @@ class _DetailsPageState extends State<DetailsPage> {
             icon: Icons.build_outlined,
             title: AppStrings.servicesDetails,
             isEnabled: true,
-              nodeKey: "det_gen",
+            nodeKey: "det_gen",
             borders: {BorderEdge.bottom},
             onTap: () {
               // Navigate to services
@@ -72,7 +78,7 @@ class _DetailsPageState extends State<DetailsPage> {
           CardItemConfig(
             icon: Icons.add_box_outlined,
             title: AppStrings.additionalDetails,
-              nodeKey: "det_gen",
+            nodeKey: "det_gen",
             isEnabled: true,
             borders: {},
             onTap: () {
