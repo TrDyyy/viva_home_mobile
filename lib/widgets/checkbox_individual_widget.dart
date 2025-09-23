@@ -39,7 +39,7 @@ class IndividualCheckboxWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildNodeRow(BuildContext context, TreeNode node) {
+  Widget _buildNodeRow(BuildContext context, CheckBoxTreeNode node) {
     return Container(
       padding: padding ?? const EdgeInsets.symmetric(vertical: 4),
       child: Row(

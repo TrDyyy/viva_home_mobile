@@ -2,10 +2,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:viva_home_mobile/models/checkbox_node.dart';
 
 class GlobalTreeState {
-  final Map<String, TreeNode> allNodes;
+  final Map<String, CheckBoxTreeNode> allNodes;
   GlobalTreeState({required this.allNodes});
 
-  GlobalTreeState copyWith({Map<String, TreeNode>? allNodes}) {
+  GlobalTreeState copyWith({Map<String, CheckBoxTreeNode>? allNodes}) {
     return GlobalTreeState(allNodes: allNodes ?? this.allNodes);
   }
 }
@@ -13,12 +13,12 @@ class GlobalTreeState {
 class GlobalTreeManager extends Cubit<GlobalTreeState> {
   GlobalTreeManager() : super(GlobalTreeState(allNodes: {}));
 
-  void initializeNodes(Map<String, TreeNode> nodes) {
+  void initializeNodes(Map<String, CheckBoxTreeNode> nodes) {
     emit(GlobalTreeState(allNodes: nodes));
   }
 
   void toggleNode(String nodeKey, bool isChecked) {
-    final updatedNodes = Map<String, TreeNode>.from(state.allNodes);
+    final updatedNodes = Map<String, CheckBoxTreeNode>.from(state.allNodes);
     final node = updatedNodes[nodeKey];
     if (node == null || !node.isEnabled) return;
 
@@ -39,7 +39,7 @@ class GlobalTreeManager extends Cubit<GlobalTreeState> {
   }
 
   void _updateChildren(
-    Map<String, TreeNode> nodes,
+    Map<String, CheckBoxTreeNode> nodes,
     List<String> childKeys,
     bool isChecked,
   ) {
@@ -54,7 +54,7 @@ class GlobalTreeManager extends Cubit<GlobalTreeState> {
     }
   }
 
-  void _updateParent(Map<String, TreeNode> nodes, String parentKey) {
+  void _updateParent(Map<String, CheckBoxTreeNode> nodes, String parentKey) {
     final parent = nodes[parentKey];
     if (parent == null || parent.checkSource != CheckSource.auto) return;
     final childrenStates = parent.childKeys
@@ -73,7 +73,7 @@ class GlobalTreeManager extends Cubit<GlobalTreeState> {
     }
   }
 
-  TreeNode? getNode(String nodeKey) {
+  CheckBoxTreeNode? getNode(String nodeKey) {
     return state.allNodes[nodeKey];
   }
 }

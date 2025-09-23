@@ -1,8 +1,8 @@
 import '../models/checkbox_node.dart';
 
 class CheckboxTreesConfig {
-  static Map<String, TreeNode> get detailsTree => {
-    "det_root": TreeNode(
+  static Map<String, CheckBoxTreeNode> get detailsTree => {
+    "det_root": CheckBoxTreeNode(
       key: "det_root",
       title: "Detail",
       treePath: "detail",
@@ -11,7 +11,7 @@ class CheckboxTreesConfig {
       checkSource: CheckSource.auto,
     ),
     //General leaf
-    "det_gen": TreeNode(
+    "det_gen": CheckBoxTreeNode(
       key: "det_gen",
       title: "General",
       treePath: "detail.general",
@@ -30,7 +30,7 @@ class CheckboxTreesConfig {
       parentKey: "det_root",
       checkSource: CheckSource.auto,
     ),
-    "det_gen_iov": TreeNode(
+    "det_gen_iov": CheckBoxTreeNode(
       key: "det_gen_iov",
       title: "Intent of valuation",
       treePath: "detail.general.iot",
@@ -38,7 +38,7 @@ class CheckboxTreesConfig {
       parentKey: "det_gen",
       checkSource: CheckSource.auto,
     ),
-    "det_gen_homeowner": TreeNode(
+    "det_gen_homeowner": CheckBoxTreeNode(
       key: "det_gen_homeowner",
       title: "Homeowner",
       treePath: "detail.general.homeowner",
@@ -46,7 +46,7 @@ class CheckboxTreesConfig {
       parentKey: "det_gen",
       checkSource: CheckSource.auto,
     ),
-    "det_gen_formInfo": TreeNode(
+    "det_gen_formInfo": CheckBoxTreeNode(
       key: "det_gen_formInfo",
       title: "Form Information",
       treePath: "detail.general.formInfo",
@@ -54,7 +54,7 @@ class CheckboxTreesConfig {
       parentKey: "det_gen",
       checkSource: CheckSource.auto,
     ),
-    "det_gen_proAddress": TreeNode(
+    "det_gen_proAddress": CheckBoxTreeNode(
       key: "det_gen_proAddress",
       title: "Property Address",
       treePath: "detail.general.proAddress",
@@ -62,7 +62,7 @@ class CheckboxTreesConfig {
       parentKey: "det_gen",
       checkSource: CheckSource.auto,
     ),
-    "det_gen_locality": TreeNode(
+    "det_gen_locality": CheckBoxTreeNode(
       key: "det_gen_locality",
       title: "Locality",
       treePath: "detail.general.locality",
@@ -70,7 +70,7 @@ class CheckboxTreesConfig {
       parentKey: "det_gen",
       checkSource: CheckSource.auto,
     ),
-    "det_gen_tenure": TreeNode(
+    "det_gen_tenure": CheckBoxTreeNode(
       key: "det_gen_tenure",
       title: "Tenure",
       treePath: "detail.general.tenure",
@@ -78,7 +78,7 @@ class CheckboxTreesConfig {
       parentKey: "det_gen",
       checkSource: CheckSource.auto,
     ),
-    "det_gen_proSize": TreeNode(
+    "det_gen_proSize": CheckBoxTreeNode(
       key: "det_gen_proSize",
       title: "Property Size",
       treePath: "detail.general.proSize",
@@ -86,7 +86,7 @@ class CheckboxTreesConfig {
       parentKey: "det_gen",
       checkSource: CheckSource.auto,
     ),
-    "det_gen_efficiences": TreeNode(
+    "det_gen_efficiences": CheckBoxTreeNode(
       key: "det_gen_efficiences",
       title: "Efficiencies",
       treePath: "detail.general.efficiences",
@@ -94,7 +94,7 @@ class CheckboxTreesConfig {
       parentKey: "det_gen",
       checkSource: CheckSource.auto,
     ),
-    "det_gen_newProperty": TreeNode(
+    "det_gen_newProperty": CheckBoxTreeNode(
       key: "det_gen_newProperty",
       title: "New Property",
       treePath: "detail.general.newProperty",
@@ -105,7 +105,7 @@ class CheckboxTreesConfig {
   };
 
   // Combine all trees
-  static Map<String, TreeNode> get allTrees => {...detailsTree};
+  static Map<String, CheckBoxTreeNode> get allTrees => {...detailsTree};
 
   static List<String> get generalLeaf => [
     'det_gen_iov',

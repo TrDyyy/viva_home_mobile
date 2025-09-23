@@ -1,6 +1,6 @@
 enum CheckSource { manual, auto }
 
-class TreeNode {
+class CheckBoxTreeNode {
   final String key;
   final String? title;
   final bool isEnabled;
@@ -11,7 +11,7 @@ class TreeNode {
   final String treePath;
   final int level;
 
-  TreeNode({
+  CheckBoxTreeNode({
     required this.key,
     this.title,
     this.isEnabled = true,
@@ -23,7 +23,7 @@ class TreeNode {
     this.level = 0,
   });
 
-  TreeNode copyWith({
+  CheckBoxTreeNode copyWith({
     String? key,
     String? title,
     bool? isChecked,
@@ -34,7 +34,7 @@ class TreeNode {
     String? treePath,
     int? level,
   }) {
-    return TreeNode(
+    return CheckBoxTreeNode(
       key: key ?? this.key,
       title: title ?? this.title,
       isChecked: isChecked ?? this.isChecked,
