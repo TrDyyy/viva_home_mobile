@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
+import 'package:viva_home_mobile/utils/custom_button.dart';
 
 class PhotoPreviewPage extends StatelessWidget {
   final String imagePath;
-
   const PhotoPreviewPage({super.key, required this.imagePath});
 
   @override
@@ -73,7 +73,7 @@ class PhotoPreviewPage extends StatelessWidget {
                 child: Container(
                   color: AppColors.dark,
                   child: FittedBox(
-                    fit: BoxFit.contain, 
+                    fit: BoxFit.contain,
                     child: Image.file(File(imagePath)),
                   ),
                 ),
@@ -83,57 +83,28 @@ class PhotoPreviewPage extends StatelessWidget {
 
           // Bottom Buttons
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(
+              AppSizes.padding(context, SizeCategory.medium),
+            ),
             child: Column(
               children: [
-                // Upload Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop(File(imagePath));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppColors.darkTeal,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      elevation: 3,
-                    ),
-                    child: const Text(
-                      "Upload",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                CustomButton(
+                  text: "Upload",
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppColors.darkTeal,
+                  onPressed: () {
+                    Navigator.of(context).pop(File(imagePath));
+                  },
                 ),
-                const SizedBox(height: 12),
-                // Back Button
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.white, width: 2),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                    ),
-                    child: const Text(
-                      "Back",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                SizedBox(height: AppSizes.padding(context, SizeCategory.small)),
+                CustomButton(
+                  text: "Back",
+                  borderColor: AppColors.white,
+                  backgroundColor: AppColors.transparent,
+                  foregroundColor: AppColors.white,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
               ],
             ),

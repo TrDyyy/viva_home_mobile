@@ -1,8 +1,7 @@
 import '../models/checkbox_node.dart';
 
 class CheckboxTreesConfig {
-  static Map<String, TreeNode> get detailsTree =>
-  {
+  static Map<String, TreeNode> get detailsTree => {
     "det_root": TreeNode(
       key: "det_root",
       title: "Detail",
@@ -103,34 +102,20 @@ class CheckboxTreesConfig {
       parentKey: "det_gen",
       checkSource: CheckSource.auto,
     ),
-
-    // //External leaf
-    // "det_external": TreeNode(
-    //   key: "det_external",
-    //   title: "External",
-    //   treePath: "detail.external",
-    //   level: 1,
-    //   checkSource: CheckSource.auto,
-    // ),
   };
 
   // Combine all trees
-  static Map<String, TreeNode> get allTrees => {
-    ...detailsTree,
-  };
+  static Map<String, TreeNode> get allTrees => {...detailsTree};
 
-  // Helper methods for specific use cases
   static List<String> get generalLeaf => [
-    'det_gen_iov', 'det_gen_tenure', 'det_gen_proSize', 'det_gen_efficiences', 'det_gen_newProperty', "det_gen_formInfo", "det_gen_homeowner", "det_gen_locality", "det_gen_proAddress",
+    'det_gen_iov',
+    'det_gen_tenure',
+    'det_gen_proSize',
+    'det_gen_efficiences',
+    'det_gen_newProperty',
+    "det_gen_formInfo",
+    "det_gen_homeowner",
+    "det_gen_locality",
+    "det_gen_proAddress",
   ];
-
-  // Get nodes by category
-  static List<String> getNodesByCategory(String category) {
-    switch (category) {
-      case 'general':
-        return generalLeaf;
-      default:
-        return [];
-    }
-  }
 }

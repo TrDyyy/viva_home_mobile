@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:viva_home_mobile/cubits/checkbox_tree_cubit.dart';
-import 'package:viva_home_mobile/hooks/use_show_image_fullscreen.dart';
+import 'package:viva_home_mobile/utils/use_show_image_fullscreen.dart';
 import 'package:viva_home_mobile/models/tree_config.dart';
 import 'package:viva_home_mobile/pages/camera/custom_camera_page.dart';
 import 'package:viva_home_mobile/utils/constants.dart';

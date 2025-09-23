@@ -57,8 +57,7 @@ class BaseLogoPage extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          Positioned.directional(
-            textDirection: TextDirection.ltr,
+          Positioned.fill(
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(

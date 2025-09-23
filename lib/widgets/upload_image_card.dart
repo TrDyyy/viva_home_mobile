@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:viva_home_mobile/hooks/use_show_image_fullscreen.dart';
+import 'package:viva_home_mobile/utils/use_show_image_fullscreen.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
 
 class UploadImageCard extends StatelessWidget {

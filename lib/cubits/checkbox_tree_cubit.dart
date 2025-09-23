@@ -77,11 +77,4 @@ class GlobalTreeManager extends Cubit<GlobalTreeState> {
   TreeNode? getNode(String nodeKey) {
     return state.allNodes[nodeKey];
   }
-
-  List<TreeNode> getNodesByKeys(List<String> nodeKeys) {
-    return nodeKeys
-        .map((key) => state.allNodes[key])
-        .whereType<TreeNode>()
-        .toList();
-  }
 }

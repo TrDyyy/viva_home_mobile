@@ -42,7 +42,8 @@ class ValidationUtils {
     }
     return null;
   }
-   static String? validateRequiredOption<T>(T? value, {String? message}) {
+
+  static String? validateRequiredOption<T>(T? value, {String? message}) {
     if (value == null) {
       return message ?? 'This field is required';
     }

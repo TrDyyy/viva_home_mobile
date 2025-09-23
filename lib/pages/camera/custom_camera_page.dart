@@ -11,8 +11,7 @@ class CustomCameraPage extends StatefulWidget {
   const CustomCameraPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _CustomCameraPageState createState() => _CustomCameraPageState();
+  State<CustomCameraPage> createState() => _CustomCameraPageState();
 }
 
 class _CustomCameraPageState extends State<CustomCameraPage> {
@@ -29,22 +28,22 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
   }
 
   Future<void> _initializeCamera() async {
-  final status = await Permission.camera.request();
-  if (status.isGranted) {
-    cameras = await availableCameras();
-    if (cameras!.isNotEmpty) {
-      _controller = CameraController(cameras![0], ResolutionPreset.high);
-      await _controller!.initialize();
-      if (mounted) {
-        setState(() {
-          isCameraInitialized = true;
-        });
+    final status = await Permission.camera.request();
+    if (status.isGranted) {
+      cameras = await availableCameras();
+      if (cameras!.isNotEmpty) {
+        _controller = CameraController(cameras![0], ResolutionPreset.high);
+        await _controller!.initialize();
+        if (mounted) {
+          setState(() {
+            isCameraInitialized = true;
+          });
+        }
       }
+    } else {
+      debugPrint('Camera permission denied');
     }
-  } else {
-    debugPrint('Camera permission denied');
   }
-}
 
   Future<void> _switchCamera() async {
     if (cameras == null || cameras!.isEmpty) return;
@@ -91,20 +90,19 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
     }
   }
 
-  void _showPreview() {
-    if (capturedImage != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              PhotoPreviewPage(imagePath: capturedImage!.path),
-        ),
-      ).then((result) {
-        if (result is File) {
-          // ignore: use_build_context_synchronously
-          Navigator.pop(context, result);
-        }
-      });
+  Future<void> _showPreview() async {
+    if (capturedImage == null) return;
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PhotoPreviewPage(imagePath: capturedImage!.path),
+      ),
+    );
+
+    if (!mounted) return;
+    if (result is File) {
+      Navigator.pop(context, result);
     }
   }
 
