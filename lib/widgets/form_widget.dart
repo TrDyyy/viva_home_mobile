@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
+import 'package:viva_home_mobile/utils/custom_checkbox_group.dart';
 import 'package:viva_home_mobile/utils/custom_text_field.dart';
 import 'package:viva_home_mobile/utils/radio_group.dart';
 import 'package:viva_home_mobile/widgets/checkbox_individual_widget.dart';
@@ -328,3 +329,55 @@ Widget buildOtherSpecifyField({
     ],
   );
 }
+
+Widget buildCheckboxField<T>({
+  required BuildContext context,
+  String? label,
+  bool customLabelText = false,
+  required List<CheckboxOption<T>> options,
+  required List<T> values,
+  required ValueChanged<List<T>> onChanged,
+  String? Function(List<T>?)? validator,
+  void Function(List<T>?)? onSaved,
+}) {
+  return FormField<List<T>>(
+    initialValue: values,
+    validator: validator,
+    onSaved: onSaved,
+    builder: (field) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (customLabelText && label != null)
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: AppSizes.font(context, SizeCategory.large),
+                fontWeight: FontWeight.bold,
+                color: AppColors.dark,
+              ),
+            ),
+          CustomCheckboxGroup<T>(
+            options: options,
+            values: field.value ?? [],
+            onChanged: (newValues) {
+              field.didChange(newValues);
+              onChanged(newValues);
+            },
+          ),
+          if (field.hasError)
+            Padding(
+              padding: EdgeInsets.only(
+                top: AppSizes.padding(context, SizeCategory.small),
+              ),
+              child: Text(
+                field.errorText!,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+        ],
+      );
+    },
+  );
+}
+

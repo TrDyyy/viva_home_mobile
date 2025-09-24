@@ -7,7 +7,7 @@ class CheckboxTreesConfig {
       title: "Detail",
       treePath: "detail",
       level: 0,
-      childKeys: ["det_gen"],
+      childKeys: ["det_gen", "det_ext"],
       checkSource: CheckSource.auto,
     ),
     //General leaf
@@ -102,6 +102,63 @@ class CheckboxTreesConfig {
       parentKey: "det_gen",
       checkSource: CheckSource.auto,
     ),
+
+    // External leaf
+    "det_ext": CheckBoxTreeNode(
+      key: "det_ext",
+      title: "External",
+      treePath: "detail.external",
+      level: 1,
+      childKeys: [
+        "det_ext_dwellingType",
+        "det_ext_propertyAge",
+        "det_ext_alterations",
+        "det_ext_construction",
+        "det_ext_outbuildings",
+      ],
+      parentKey: "det_root",
+      checkSource: CheckSource.auto,
+    ),
+    "det_ext_dwellingType": CheckBoxTreeNode(
+      key: "det_ext_dwellingType",
+      title: "Dwelling type",
+      treePath: "detail.external.dwellingType",
+      level: 2,
+      parentKey: "det_ext",
+      checkSource: CheckSource.auto,
+    ),
+    "det_ext_propertyAge": CheckBoxTreeNode(
+      key: "det_ext_propertyAge",
+      title: "Property Age",
+      treePath: "detail.external.propertyAge",
+      level: 2,
+      parentKey: "det_ext",
+      checkSource: CheckSource.auto,
+    ),
+    "det_ext_alterations": CheckBoxTreeNode(
+      key: "det_ext_alterations",
+      title: "Alterations",
+      treePath: "detail.external.alterations",
+      level: 2,
+      parentKey: "det_ext",
+      checkSource: CheckSource.auto,
+    ),
+    "det_ext_construction": CheckBoxTreeNode(
+      key: "det_ext_construction",
+      title: "Construction",
+      treePath: "detail.external.construction",
+      level: 2,
+      parentKey: "det_ext",
+      checkSource: CheckSource.auto,
+    ),
+    "det_ext_outbuildings": CheckBoxTreeNode(
+      key: "det_ext_outbuildings",
+      title: "Outbuildings",
+      treePath: "detail.external.outbuildings",
+      level: 2,
+      parentKey: "det_ext",
+      checkSource: CheckSource.auto,
+    ),
   };
 
   // Combine all trees
@@ -117,5 +174,13 @@ class CheckboxTreesConfig {
     "det_gen_homeowner",
     "det_gen_locality",
     "det_gen_proAddress",
+  ];
+
+  static List<String> get externalLeaf => [
+    'det_ext_dwellingType',
+    'det_ext_propertyAge',
+    'det_ext_alterations',
+    'det_ext_construction',
+    'det_ext_outbuildings',
   ];
 }
