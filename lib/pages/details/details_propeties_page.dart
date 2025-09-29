@@ -44,7 +44,7 @@ class _DetailsPageState extends State<DetailsPage> {
             icon: Icons.home_outlined,
             title: AppStrings.externalDetails,
             isEnabled: true,
-            nodeKey: "det_gen",
+            nodeKey: "det_ext",
             borders: {BorderEdge.bottom},
             onTap: () {
               Navigator.push(

@@ -44,7 +44,7 @@ class ValidationUtils {
   }
 
   static String? validateRequiredOption<T>(T? value, {String? message}) {
-    if (value == null) {
+    if (value == null || (value is Iterable && value.isEmpty)) {
       return message ?? 'This field is required';
     }
     return null;

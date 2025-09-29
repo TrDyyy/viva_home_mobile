@@ -46,7 +46,6 @@ class FormSection extends StatelessWidget {
       ),
       child: Padding(
         padding: EdgeInsets.only(
-        
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: SingleChildScrollView(
@@ -256,7 +255,7 @@ FormFieldGroup buildRadioField<T>({
             children: [
               CustomRadioGroup<T>(
                 options: options,
-                groupValue: field.value,
+                groupValue: groupValue,
                 onChanged: (val) {
                   onChanged(val);
                   field.didChange(val);
@@ -340,44 +339,43 @@ Widget buildCheckboxField<T>({
   String? Function(List<T>?)? validator,
   void Function(List<T>?)? onSaved,
 }) {
-  return FormField<List<T>>(
-    initialValue: values,
-    validator: validator,
-    onSaved: onSaved,
-    builder: (field) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (customLabelText && label != null)
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: AppSizes.font(context, SizeCategory.large),
-                fontWeight: FontWeight.bold,
-                color: AppColors.dark,
+  return FormFieldGroup(
+    customLabelText: customLabelText,
+    label: label ?? '',
+    items: [
+      FormField<List<T>>(
+        initialValue: values,
+        validator: validator,
+        onSaved: onSaved,
+        builder: (field) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomCheckboxGroup<T>(
+                options: options,
+                values: field.value ?? [],
+                onChanged: (newValues) {
+                  field.didChange(newValues);
+                  onChanged(newValues);
+                },
               ),
-            ),
-          CustomCheckboxGroup<T>(
-            options: options,
-            values: field.value ?? [],
-            onChanged: (newValues) {
-              field.didChange(newValues);
-              onChanged(newValues);
-            },
-          ),
-          if (field.hasError)
-            Padding(
-              padding: EdgeInsets.only(
-                top: AppSizes.padding(context, SizeCategory.small),
-              ),
-              child: Text(
-                field.errorText!,
-                style: const TextStyle(color: Colors.red),
-              ),
-            ),
-        ],
-      );
-    },
+              if (field.hasError)
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: AppSizes.padding(context, SizeCategory.small),
+                  ),
+                  child: Text(
+                    field.errorText!,
+                    style: TextStyle(
+                      color: AppColors.error,
+                      fontSize: AppSizes.font(context, SizeCategory.medium),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    ],
   );
 }
-

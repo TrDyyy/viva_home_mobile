@@ -17,30 +17,72 @@ class ExternalFormPage extends StatefulWidget {
   State<ExternalFormPage> createState() => _ExternalFormPageState();
 }
 
-final _formKey = GlobalKey<FormState>();
-final Map<String, dynamic> formData = {};
-
 class _ExternalFormPageState extends State<ExternalFormPage> {
+  final _formKey = GlobalKey<FormState>();
+  final Map<String, dynamic> formData = {};
   bool _hasInitialized = false;
   bool? isPropertyAltered;
   bool? isLoftConverted;
+  bool? isPlanningCertified;
+  bool? hasRemovedStructures;
+
   List<String> selectedOutbuildings = [];
 
   // check state
   bool hasProType = false;
   bool hasProStyle = false;
   bool hasPropertyAge = false;
-  bool hasAlterations = false;
-  bool hasConstruction = false;
-  bool hasOutbuildings = false;
+  bool hasLoftConverted = false;
+  bool hasPropertyAltered = false;
+
+  bool hasRoofMaterial = false;
+  bool hasWallMaterial = false;
 
   bool shouldCheckDwelling() => hasProStyle && hasProType;
+  bool shouldCheckAlteredAndLoft() {
+    // Case 1: both No
+    if (isPropertyAltered == false && isLoftConverted == false) {
+      return true;
+    }
+    // Case 2: Property Yes, Loft No
+    if (isPropertyAltered == true && isLoftConverted == false) {
+      return hasPropertyAltered;
+    }
+    // Case 3: Property No, Loft Yes
+    if (isPropertyAltered == false && isLoftConverted == true) {
+      return hasLoftConverted;
+    }
+    // Case 4: both Yes
+    if (isPropertyAltered == true && isLoftConverted == true) {
+      return hasPropertyAltered && hasLoftConverted;
+    }
+    return false;
+  }
+
+  bool shouldCheckPropertyAltered() =>
+      shouldCheckAlteredAndLoft() &&
+      isPlanningCertified != null &&
+      hasRemovedStructures != null;
+
+  bool shouldCheckConstruction() => hasWallMaterial && hasRoofMaterial;
 
   void _updateNodeWithConditions(String nodeKey) {
     late bool shouldCheck;
 
     switch (nodeKey) {
       case "det_ext_dwellingType":
+        shouldCheck = shouldCheckDwelling();
+        break;
+      case "det_ext_propertyAge":
+        shouldCheck = hasPropertyAge;
+        break;
+      case "det_ext_alterations":
+        shouldCheck = shouldCheckPropertyAltered();
+        break;
+      case "det_ext_construction":
+        shouldCheck = shouldCheckConstruction();
+        break;
+      case "det_ext_outbuildings":
         shouldCheck = shouldCheckDwelling();
         break;
       default:
@@ -138,6 +180,10 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
                       validator: ValidationUtils.required,
                       onSaved: (val) => formData["dwellingStyle"] = val,
                     ),
+                    SizedBox(
+                      height: AppSizes.padding(context, SizeCategory.medium),
+                    ),
+                    buildOtherSpecifyField(context: context),
                   ],
                 ),
               ),
@@ -147,21 +193,16 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
                 label: "Property Age",
                 nodeKey: "det_ext_propertyAge",
                 child: buildComboBoxField(
-                  label: "Property style:",
-                  items: [
-                    "Terrace",
-                    "Semi-Detached",
-                    "Semi-Detached Link",
-                    "Detached",
-                    "Detached Link",
-                    "Other",
-                  ],
+                  label: "Date of build (If Known):",
+                  items: ["1961", "1962", "1963", "Unknown"],
                   onChanged: (val) {
-                    setState(() => hasProStyle = val != null && val.isNotEmpty);
-                    _updateNodeWithConditions("det_ext_dwellingType");
+                    setState(
+                      () => hasPropertyAge = val != null && val.isNotEmpty,
+                    );
+                    _updateNodeWithConditions("det_ext_propertyAge");
                   },
                   validator: ValidationUtils.required,
-                  onSaved: (val) => formData["dwellingStyle"] = val,
+                  onSaved: (val) => formData["propertyAge"] = val,
                 ),
               ),
 
@@ -181,23 +222,31 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
                       ],
                       groupValue: isPropertyAltered,
                       onChanged: (value) {
-                        setState(() => isPropertyAltered = value);
+                        setState(() {
+                          isPropertyAltered = value;
+                          if (value == false) {
+                            hasPropertyAltered = false;
+                          }
+                        });
                         _updateNodeWithConditions("det_ext_alterations");
                       },
                       onSaved: (val) => formData["is_property_altered"] = val,
                       validator: ValidationUtils.validateRequiredOption<bool>,
                     ),
-                    if (isPropertyAltered == true)
+                    if (isPropertyAltered == true) ...[
                       buildCustomTextField(
                         label: "If 'Yes' please specify:",
                         hintText: "...",
                         onChanged: (val) {
                           setState(
-                            () => hasAlterations = val!.trim().isNotEmpty,
+                            () => hasPropertyAltered = val!.trim().isNotEmpty,
                           );
+                          _updateNodeWithConditions("det_ext_alterations");
                         },
-                        onSaved: (val) => formData["alterations"] = val,
+                        onSaved: (val) =>
+                            formData["property_alterations"] = val,
                       ),
+                    ],
                     buildRadioField<bool>(
                       context: context,
                       label: "Has the loft been converted?",
@@ -207,10 +256,15 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
                       ],
                       groupValue: isLoftConverted,
                       onChanged: (value) {
-                        setState(() => isLoftConverted = value);
+                        setState(() {
+                          isLoftConverted = value;
+                          if (value == false) {
+                            hasLoftConverted = false;
+                          }
+                        });
                         _updateNodeWithConditions("det_ext_alterations");
                       },
-                      onSaved: (val) => formData["is_property_altered"] = val,
+                      onSaved: (val) => formData["is_loft_converted"] = val,
                       validator: ValidationUtils.validateRequiredOption<bool>,
                     ),
                     if (isLoftConverted == true) ...[
@@ -219,10 +273,11 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
                         hintText: "...",
                         onChanged: (val) {
                           setState(
-                            () => hasAlterations = val!.trim().isNotEmpty,
+                            () => hasLoftConverted = val!.trim().isNotEmpty,
                           );
+                          _updateNodeWithConditions("det_ext_alterations");
                         },
-                        onSaved: (val) => formData["alterations"] = val,
+                        onSaved: (val) => formData["loft_conversion"] = val,
                       ),
                     ],
                     buildRadioField<bool>(
@@ -233,12 +288,12 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
                         RadioOption<bool>(value: true, label: "Yes"),
                         RadioOption<bool>(value: false, label: "No"),
                       ],
-                      groupValue: isPropertyAltered,
+                      groupValue: isPlanningCertified,
                       onChanged: (value) {
-                        setState(() => isPropertyAltered = value);
+                        setState(() => isPlanningCertified = value);
                         _updateNodeWithConditions("det_ext_alterations");
                       },
-                      onSaved: (val) => formData["is_property_altered"] = val,
+                      onSaved: (val) => formData["is_planning_certified"] = val,
                       validator: ValidationUtils.validateRequiredOption<bool>,
                     ),
                     buildRadioField<bool>(
@@ -249,12 +304,13 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
                         RadioOption<bool>(value: true, label: "Yes"),
                         RadioOption<bool>(value: false, label: "No"),
                       ],
-                      groupValue: isPropertyAltered,
+                      groupValue: hasRemovedStructures,
                       onChanged: (value) {
-                        setState(() => isPropertyAltered = value);
+                        setState(() => hasRemovedStructures = value);
                         _updateNodeWithConditions("det_ext_alterations");
                       },
-                      onSaved: (val) => formData["is_property_altered"] = val,
+                      onSaved: (val) =>
+                          formData["has_removed_structures"] = val,
                       validator: ValidationUtils.validateRequiredOption<bool>,
                     ),
                   ],
@@ -268,23 +324,24 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
                 child: Column(
                   children: [
                     buildComboBoxField(
-                      label: "Main construction material:",
+                      label: "Wall's material:",
                       items: [
-                        "Brick",
-                        "Stone",
+                        "Terrace",
+                        "Solid Brick",
+                        "Solid Stone",
                         "Concrete",
-                        "Timber Frame",
-                        "Steel Frame",
+                        "Timber frame",
+                        "Injected cavity brick wall",
                         "Other",
                       ],
                       onChanged: (val) {
                         setState(
-                          () => hasConstruction = val != null && val.isNotEmpty,
+                          () => hasWallMaterial = val != null && val.isNotEmpty,
                         );
                         _updateNodeWithConditions("det_ext_construction");
                       },
                       validator: ValidationUtils.required,
-                      onSaved: (val) => formData["construction"] = val,
+                      onSaved: (val) => formData["wallMaterial"] = val,
                     ),
                     SizedBox(
                       height: AppSizes.padding(context, SizeCategory.medium),
@@ -294,53 +351,16 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
                       height: AppSizes.padding(context, SizeCategory.medium),
                     ),
                     buildComboBoxField(
-                      label: "Property type:",
-                      items: [
-                        "House",
-                        "Bungalow",
-                        "Maisonette",
-                        "Purpose built",
-                        "Flat",
-                        "Converted flat",
-                        "Studio flat",
-                        "Other",
-                      ],
+                      label: "Roof’s material:",
+                      items: ["Tile", "Slate", "Asphalt", "Felt", "Other"],
                       onChanged: (val) {
                         setState(
-                          () => hasProType = val != null && val.isNotEmpty,
+                          () => hasRoofMaterial = val != null && val.isNotEmpty,
                         );
-                        _updateNodeWithConditions("det_ext_dwellingType");
+                        _updateNodeWithConditions("det_ext_construction");
                       },
                       validator: ValidationUtils.required,
-                      onSaved: (val) => formData["dwellingType"] = val,
-                    ),
-                    SizedBox(
-                      height: AppSizes.padding(context, SizeCategory.medium),
-                    ),
-                    buildOtherSpecifyField(context: context),
-                    SizedBox(
-                      height: AppSizes.padding(context, SizeCategory.medium),
-                    ),
-                    buildComboBoxField(
-                      label: "Property type:",
-                      items: [
-                        "House",
-                        "Bungalow",
-                        "Maisonette",
-                        "Purpose built",
-                        "Flat",
-                        "Converted flat",
-                        "Studio flat",
-                        "Other",
-                      ],
-                      onChanged: (val) {
-                        setState(
-                          () => hasProType = val != null && val.isNotEmpty,
-                        );
-                        _updateNodeWithConditions("det_ext_dwellingType");
-                      },
-                      validator: ValidationUtils.required,
-                      onSaved: (val) => formData["dwellingType"] = val,
+                      onSaved: (val) => formData["roofMaterial"] = val,
                     ),
                     SizedBox(
                       height: AppSizes.padding(context, SizeCategory.medium),
@@ -357,39 +377,49 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
               FormFieldWrapper(
                 label: "Outbuildings",
                 nodeKey: "det_ext_outbuildings",
-                child: buildCheckboxField<String>(
-                  context: context,
-                  customLabelText: true,
-                  options: const [
-                    CheckboxOption(
-                      value: "single_garage",
-                      label: "Single garage",
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildCheckboxField<String>(
+                      context: context,
+                      label: "Do you have any outbuildings?",
+                      options: [
+                        CheckboxOption(
+                          value: "single_garage",
+                          label: "Single garage",
+                        ),
+                        CheckboxOption(
+                          value: "double_garage",
+                          label: "Double garage",
+                        ),
+                        CheckboxOption(
+                          value: "parking",
+                          label: "Parking space",
+                        ),
+                        CheckboxOption(
+                          value: "no_parking",
+                          label: "No parking available",
+                        ),
+                        CheckboxOption(value: "pool", label: "Swimming pools"),
+                        CheckboxOption(value: "shed", label: "Shed"),
+                        CheckboxOption(
+                          value: "other",
+                          label: "Other 'specify below'",
+                        ),
+                      ],
+                      values: selectedOutbuildings,
+                      onChanged: (newValues) {
+                        setState(() => selectedOutbuildings = newValues);
+                        _updateNodeWithConditions("det_ext_outbuildings");
+                      },
+                      validator: ValidationUtils.validateRequiredOption,
+                      onSaved: (values) => formData["outbuildings"] = values,
                     ),
-                    CheckboxOption(
-                      value: "double_garage",
-                      label: "Double garage",
+                    SizedBox(
+                      height: AppSizes.padding(context, SizeCategory.medium),
                     ),
-                    CheckboxOption(value: "parking", label: "Parking space"),
-                    CheckboxOption(
-                      value: "no_parking",
-                      label: "No parking available",
-                    ),
-                    CheckboxOption(value: "pool", label: "Swimming pools"),
-                    CheckboxOption(value: "shed", label: "Shed"),
-                    CheckboxOption(
-                      value: "other",
-                      label: "Other 'specify below'",
-                    ),
+                    buildOtherSpecifyField(context: context),
                   ],
-                  values: selectedOutbuildings, // List<String>
-                  onChanged: (newValues) {
-                    setState(() => selectedOutbuildings = newValues);
-                    _updateNodeWithConditions("det_gen_outbuilding");
-                  },
-                  validator: (values) {
-                    return ValidationUtils.validateRequiredOption(values);
-                  },
-                  onSaved: (values) => formData["outbuildings"] = values,
                 ),
               ),
 

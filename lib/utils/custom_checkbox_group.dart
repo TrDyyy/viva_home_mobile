@@ -29,16 +29,36 @@ class CustomCheckboxGroup<T> extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Wrap(
+          spacing: AppSizes.padding(context, SizeCategory.medium),
+          runSpacing: AppSizes.padding(context, SizeCategory.medium),
           children: options.map((option) {
             final isChecked = values.contains(option.value);
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Checkbox(
-                  value: isChecked,
-                  onChanged: (_) => _onSelected(option.value),
-                  activeColor: AppColors.primaryTeal,
+                Container(
+                  height: AppSizes.icon(context, SizeCategory.medium),
+                  width: AppSizes.icon(context, SizeCategory.medium),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(
+                      AppSizes.radius(context, SizeCategory.xxxlarge),
+                    ),
+                    border: Border.all(color: AppColors.darkGray, width: 1),
+                  ),
+                  child: Checkbox(
+                    value: isChecked,
+                    side: BorderSide(color: AppColors.transparent),
+                    onChanged: (_) => _onSelected(option.value),
+                    activeColor: AppColors.primaryTeal,
+                    checkColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppSizes.radius(context, SizeCategory.medium),
+                      ),
+                    ),
+                  ),
                 ),
+                SizedBox(width: AppSizes.padding(context, SizeCategory.small)),
                 Text(
                   option.label,
                   style: TextStyle(
@@ -47,7 +67,6 @@ class CustomCheckboxGroup<T> extends StatelessWidget {
                     color: AppColors.darkTeal,
                   ),
                 ),
-                SizedBox(width: AppSizes.padding(context, SizeCategory.medium)),
               ],
             );
           }).toList(),

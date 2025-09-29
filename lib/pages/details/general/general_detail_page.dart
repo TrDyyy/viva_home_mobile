@@ -361,99 +361,102 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       validator: ValidationUtils.validateRequiredOption<bool>,
                     ),
                     // Add the info text
-                    FormFieldGroup(
-                      customLabelText: true,
-                      items: [
-                        Text(
-                          "If you are not the homeowner please fill out the following questions below:",
-                          style: TextStyle(
-                            fontSize: AppSizes.font(
-                              context,
-                              SizeCategory.medium,
+                    if (isHomeowner == false) ...[
+                      FormFieldGroup(
+                        customLabelText: true,
+                        items: [
+                          Text(
+                            "If you are not the homeowner please fill out the following questions below:",
+                            style: TextStyle(
+                              fontSize: AppSizes.font(
+                                context,
+                                SizeCategory.medium,
+                              ),
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.darkTeal,
                             ),
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.darkTeal,
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: AppSizes.padding(context, SizeCategory.medium),
-                    ),
-                    buildComboBoxField(
-                      label: "Status to house:",
-                      items: ["Surveyor", "Agent", "Owner", "Investor"],
-                      onChanged: (val) {
-                        if (isHomeowner == false) {
-                          setState(() => hasStatusHouse = val!.isNotEmpty);
-                          _updateNodeWithConditions("det_gen_formInfo");
-                        }
-                      },
-                      onSaved: (val) => formData["status_house"] = val,
-                      validator: (val) {
-                        if (isHomeowner == false) {
-                          return ValidationUtils.required(val);
-                        }
-                        return null;
-                      },
-                    ),
-                    buildCustomTextField(
-                      label: "Title:",
-                      hintText: "Mr / Mrs",
-                      onSaved: (val) => formData["title_name"] = val,
-                      onChanged: (val) {
-                        if (isHomeowner == false) {
-                          setState(
-                            () => hasTitleFormInfo = val!.trim().isNotEmpty,
-                          );
-                          _updateNodeWithConditions("det_gen_formInfo");
-                        }
-                      },
-                      validator: (val) {
-                        if (isHomeowner == false) {
-                          return ValidationUtils.required(val);
-                        }
-                        return null;
-                      },
-                    ),
-                    buildCustomTextField(
-                      label: "First name:",
-                      hintText: "John...",
-                      onSaved: (val) => formData["first_name_nonowner"] = val,
-                      onChanged: (val) {
-                        if (isHomeowner == false) {
-                          setState(
-                            () => hasFirstNameFormInfo = val!.trim().isNotEmpty,
-                          );
-                          _updateNodeWithConditions("det_gen_formInfo");
-                        }
-                      },
-                      validator: (val) {
-                        if (isHomeowner == false) {
-                          return ValidationUtils.required(val);
-                        }
-                        return null;
-                      },
-                    ),
-                    buildCustomTextField(
-                      label: "Surname:",
-                      hintText: "Doe...",
-                      onSaved: (val) => formData["surname_nonowner"] = val,
-                      onChanged: (val) {
-                        if (isHomeowner == false) {
-                          setState(
-                            () => hasSurnameFormInfo = val!.trim().isNotEmpty,
-                          );
-                          _updateNodeWithConditions("det_gen_formInfo");
-                        }
-                      },
-                      validator: (val) {
-                        if (isHomeowner == false) {
-                          return ValidationUtils.required(val);
-                        }
-                        return null;
-                      },
-                    ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: AppSizes.padding(context, SizeCategory.medium),
+                      ),
+                      buildComboBoxField(
+                        label: "Status to house:",
+                        items: ["Surveyor", "Agent", "Owner", "Investor"],
+                        onChanged: (val) {
+                          if (isHomeowner == false) {
+                            setState(() => hasStatusHouse = val!.isNotEmpty);
+                            _updateNodeWithConditions("det_gen_formInfo");
+                          }
+                        },
+                        onSaved: (val) => formData["status_house"] = val,
+                        validator: (val) {
+                          if (isHomeowner == false) {
+                            return ValidationUtils.required(val);
+                          }
+                          return null;
+                        },
+                      ),
+                      buildCustomTextField(
+                        label: "Title:",
+                        hintText: "Mr / Mrs",
+                        onSaved: (val) => formData["title_name"] = val,
+                        onChanged: (val) {
+                          if (isHomeowner == false) {
+                            setState(
+                              () => hasTitleFormInfo = val!.trim().isNotEmpty,
+                            );
+                            _updateNodeWithConditions("det_gen_formInfo");
+                          }
+                        },
+                        validator: (val) {
+                          if (isHomeowner == false) {
+                            return ValidationUtils.required(val);
+                          }
+                          return null;
+                        },
+                      ),
+                      buildCustomTextField(
+                        label: "First name:",
+                        hintText: "John...",
+                        onSaved: (val) => formData["first_name_nonowner"] = val,
+                        onChanged: (val) {
+                          if (isHomeowner == false) {
+                            setState(
+                              () =>
+                                  hasFirstNameFormInfo = val!.trim().isNotEmpty,
+                            );
+                            _updateNodeWithConditions("det_gen_formInfo");
+                          }
+                        },
+                        validator: (val) {
+                          if (isHomeowner == false) {
+                            return ValidationUtils.required(val);
+                          }
+                          return null;
+                        },
+                      ),
+                      buildCustomTextField(
+                        label: "Surname:",
+                        hintText: "Doe...",
+                        onSaved: (val) => formData["surname_nonowner"] = val,
+                        onChanged: (val) {
+                          if (isHomeowner == false) {
+                            setState(
+                              () => hasSurnameFormInfo = val!.trim().isNotEmpty,
+                            );
+                            _updateNodeWithConditions("det_gen_formInfo");
+                          }
+                        },
+                        validator: (val) {
+                          if (isHomeowner == false) {
+                            return ValidationUtils.required(val);
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -809,253 +812,267 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                       validator: ValidationUtils.validateRequiredOption<bool>,
                       onSaved: (val) => formData["is_new_build"] = val,
                     ),
-                    FormFieldGroup(
-                      customLabelText: true,
-                      items: [
-                        RichText(
-                          text: TextSpan(
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: AppSizes.font(
-                                context,
-                                SizeCategory.large,
+                    if (isNewBuild == true) ...[
+                      FormFieldGroup(
+                        customLabelText: true,
+                        items: [
+                          RichText(
+                            text: TextSpan(
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: AppSizes.font(
+                                  context,
+                                  SizeCategory.large,
+                                ),
+                                color: AppColors.darkTeal,
                               ),
-                              color: AppColors.darkTeal,
-                            ),
-                            children: [
-                              const TextSpan(
-                                text:
-                                    "If 'Yes', have you seen the UK Finance Disclosure of Incentives form? ",
-                              ),
-                              WidgetSpan(
-                                alignment: PlaceholderAlignment.middle,
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: AppSizes.padding(
-                                      context,
-                                      SizeCategory.small,
-                                    ),
-                                  ),
-                                  child: InkWell(
-                                    onTap: toggleInfoCard,
-                                    child: Icon(
-                                      Icons.info_outline,
-                                      color: AppColors.primaryTeal,
-                                      size: AppSizes.icon(
+                              children: [
+                                const TextSpan(
+                                  text:
+                                      "If 'Yes', have you seen the UK Finance Disclosure of Incentives form? ",
+                                ),
+                                WidgetSpan(
+                                  alignment: PlaceholderAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: AppSizes.padding(
                                         context,
-                                        SizeCategory.medium,
+                                        SizeCategory.small,
+                                      ),
+                                    ),
+                                    child: InkWell(
+                                      onTap: toggleInfoCard,
+                                      child: Icon(
+                                        Icons.info_outline,
+                                        color: AppColors.primaryTeal,
+                                        size: AppSizes.icon(
+                                          context,
+                                          SizeCategory.medium,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (showInfoCard) ...[
-                          SizedBox(
-                            height: AppSizes.padding(
-                              context,
-                              SizeCategory.medium,
+                              ],
                             ),
                           ),
-                          InfoCard(
-                            onClose: () {
-                              setState(() {
-                                showInfoCard = false;
-                              });
+                          if (showInfoCard) ...[
+                            SizedBox(
+                              height: AppSizes.padding(
+                                context,
+                                SizeCategory.medium,
+                              ),
+                            ),
+                            InfoCard(
+                              onClose: () {
+                                setState(() {
+                                  showInfoCard = false;
+                                });
+                              },
+                            ),
+                          ],
+                          buildRadioField<bool>(
+                            context: context,
+                            customLabelText: true,
+                            options: [
+                              RadioOption(value: true, label: "Yes"),
+                              RadioOption(value: false, label: "No"),
+                            ],
+                            groupValue: isHasUKFinanceDisclosure,
+                            onChanged: (value) {
+                              if (isNewBuild == true) {
+                                setState(() {
+                                  isHasUKFinanceDisclosure = value;
+                                });
+                                _updateNodeWithConditions(
+                                  "det_gen_newProperty",
+                                );
+                              }
                             },
+                            validator: (value) {
+                              if (isNewBuild == true) {
+                                return ValidationUtils.validateRequiredOption<
+                                  bool
+                                >(value);
+                              }
+                              return null;
+                            },
+                            onSaved: (val) =>
+                                formData["has_uk_finance_disclosure"] = val,
                           ),
                         ],
-                        buildRadioField<bool>(
+                      ),
+                      if (isHasUKFinanceDisclosure == true) ...[
+                        buildOtherSpecifyField(
                           context: context,
+                          textFieldEnabled: false,
+                          highlightText: "Yes",
+                          description: "upload a copy of your document below:",
+                        ),
+                        // File upload container
+                        FormFieldGroup(
                           customLabelText: true,
-                          options: [
-                            RadioOption(value: true, label: "Yes"),
-                            RadioOption(value: false, label: "No"),
+                          items: [
+                            UploadImageCard(
+                              validator: (value) {
+                                if (isHasUKFinanceDisclosure == true &&
+                                    value == null) {
+                                  return "Please upload a document";
+                                }
+                                return null;
+                              },
+                              onSaved: (value) =>
+                                  formData["uploadedFile"] = value,
+                              onPickFromCamera: _pickImageFromCamera,
+                              onPickFromGallery: _pickImageFromGallery,
+                              onUploadStateChanged: (hasUpload) {
+                                setState(() {
+                                  isHasImageUpload = hasUpload;
+                                });
+                              },
+                              onNodeUpdate: () => _updateNodeWithConditions(
+                                "det_gen_newProperty",
+                              ),
+                              placeholder: "upload.jpg",
+                            ),
                           ],
-                          groupValue: isHasUKFinanceDisclosure,
+                        ),
+                        SizedBox(
+                          height: AppSizes.padding(context, SizeCategory.small),
+                        ),
+                      ],
+                      if (isHasUKFinanceDisclosure == false) ...[
+                        buildOtherSpecifyField(
+                          context: context,
+                          textFieldEnabled: false,
+                          highlightText: "No",
+                          description:
+                              "provide contact details of the development site office or the development company if the development is complete and there is no longer a site office:",
+                        ),
+                        SizedBox(
+                          height: AppSizes.padding(context, SizeCategory.small),
+                        ),
+                        buildComboBoxField(
+                          label: "Development Company:",
+                          items: [
+                            "Bovis Homes",
+                            "Persimmon Homes",
+                            "Berkeley Group",
+                            "Unknown",
+                          ],
                           onChanged: (value) {
-                            if (isNewBuild == true) {
-                              setState(() {
-                                isHasUKFinanceDisclosure = value;
-                              });
+                            if (isHasUKFinanceDisclosure == false) {
+                              setState(() => hasDevCompany = value!.isNotEmpty);
                               _updateNodeWithConditions("det_gen_newProperty");
                             }
                           },
                           validator: (value) {
-                            if (isNewBuild == true) {
-                              return ValidationUtils.validateRequiredOption<
-                                bool
-                              >(value);
+                            if (isHasUKFinanceDisclosure == false) {
+                              return ValidationUtils.required(value);
                             }
                             return null;
                           },
-                          onSaved: (val) =>
-                              formData["has_uk_finance_disclosure"] = val,
+                          onSaved: (val) => formData["title"] = val,
                         ),
-                      ],
-                    ),
-                    buildOtherSpecifyField(
-                      context: context,
-                      textFieldEnabled: false,
-                      highlightText: "Yes",
-                      description: "upload a copy of your document below:",
-                    ),
-                    // File upload container
-                    FormFieldGroup(
-                      customLabelText: true,
-                      items: [
-                        UploadImageCard(
+                        buildCustomTextField(
+                          label: "Name of Development:",
+                          hintText: "...",
                           validator: (value) {
-                            if (isHasUKFinanceDisclosure == true &&
-                                value == null) {
-                              return "Please upload a document";
+                            if (isHasUKFinanceDisclosure == false) {
+                              return ValidationUtils.required(value);
                             }
                             return null;
                           },
-                          onSaved: (value) => formData["uploadedFile"] = value,
-                          onPickFromCamera: _pickImageFromCamera,
-                          onPickFromGallery: _pickImageFromGallery,
-                          onUploadStateChanged: (hasUpload) {
-                            setState(() {
-                              isHasImageUpload = hasUpload;
-                            });
+                          onSaved: (val) => formData["development_name"] = val,
+                          onChanged: (value) {
+                            if (isHasUKFinanceDisclosure == false) {
+                              setState(
+                                () => hasNameOfDev = value!.trim().isNotEmpty,
+                              );
+                              _updateNodeWithConditions("det_gen_newProperty");
+                            }
                           },
-                          onNodeUpdate: () =>
-                              _updateNodeWithConditions("det_gen_newProperty"),
-                          placeholder: "upload.jpg",
+                        ),
+                        buildCustomTextField(
+                          label: "Phone Number (Site Office):",
+                          hintText: "...",
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (isHasUKFinanceDisclosure == false) {
+                              return ValidationUtils.required(value);
+                            }
+                            return null;
+                          },
+                          onSaved: (val) => formData["phone_site_office"] = val,
+                          onChanged: (value) {
+                            if (isHasUKFinanceDisclosure == false) {
+                              setState(
+                                () => hasPhoneOffice = value!.trim().isNotEmpty,
+                              );
+                              _updateNodeWithConditions("det_gen_newProperty");
+                            }
+                          },
+                        ),
+                        buildCustomTextField(
+                          label: "Email Address (Site Office):",
+                          hintText: "...",
+                          validator: (value) {
+                            if (isHasUKFinanceDisclosure == false) {
+                              return ValidationUtils.validateEmail(value);
+                            }
+                            return null;
+                          },
+                          onSaved: (val) => formData["email_site_office"] = val,
+                          onChanged: (value) {
+                            if (isHasUKFinanceDisclosure == false) {
+                              setState(
+                                () => hasEmailOffice = value!.trim().isNotEmpty,
+                              );
+                              _updateNodeWithConditions("det_gen_newProperty");
+                            }
+                          },
+                        ),
+                        buildCustomTextField(
+                          label: "Phone Number:",
+                          hintText: "...",
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (isHasUKFinanceDisclosure == false) {
+                              return ValidationUtils.required(value);
+                            }
+                            return null;
+                          },
+                          onSaved: (val) => formData["phone"] = val,
+                          onChanged: (value) {
+                            if (isHasUKFinanceDisclosure == false) {
+                              setState(
+                                () => hasPhone = value!.trim().isNotEmpty,
+                              );
+                              _updateNodeWithConditions("det_gen_newProperty");
+                            }
+                          },
+                        ),
+                        buildCustomTextField(
+                          label: "Email Address:",
+                          hintText: "...",
+                          validator: (value) {
+                            if (isHasUKFinanceDisclosure == false) {
+                              return ValidationUtils.validateEmail(value);
+                            }
+                            return null;
+                          },
+                          onSaved: (val) => formData["email"] = val,
+                          onChanged: (value) {
+                            if (isHasUKFinanceDisclosure == false) {
+                              setState(
+                                () => hasEmail = value!.trim().isNotEmpty,
+                              );
+                              _updateNodeWithConditions("det_gen_newProperty");
+                            }
+                          },
                         ),
                       ],
-                    ),
-                    SizedBox(
-                      height: AppSizes.padding(context, SizeCategory.small),
-                    ),
-                    buildOtherSpecifyField(
-                      context: context,
-                      textFieldEnabled: false,
-                      highlightText: "No",
-                      description:
-                          "provide contact details of the development site office or the development company if the development is complete and there is no longer a site office:",
-                    ),
-                    SizedBox(
-                      height: AppSizes.padding(context, SizeCategory.small),
-                    ),
-                    buildComboBoxField(
-                      label: "Development Company:",
-                      items: [
-                        "Bovis Homes",
-                        "Persimmon Homes",
-                        "Berkeley Group",
-                        "Unknown",
-                      ],
-                      onChanged: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          setState(() => hasDevCompany = value!.isNotEmpty);
-                          _updateNodeWithConditions("det_gen_newProperty");
-                        }
-                      },
-                      validator: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          return ValidationUtils.required(value);
-                        }
-                        return null;
-                      },
-                      onSaved: (val) => formData["title"] = val,
-                    ),
-                    buildCustomTextField(
-                      label: "Name of Development:",
-                      hintText: "...",
-                      validator: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          return ValidationUtils.required(value);
-                        }
-                        return null;
-                      },
-                      onSaved: (val) => formData["development_name"] = val,
-                      onChanged: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          setState(
-                            () => hasNameOfDev = value!.trim().isNotEmpty,
-                          );
-                          _updateNodeWithConditions("det_gen_newProperty");
-                        }
-                      },
-                    ),
-                    buildCustomTextField(
-                      label: "Phone Number (Site Office):",
-                      hintText: "...",
-                      keyboardType: TextInputType.phone,
-                      validator: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          return ValidationUtils.required(value);
-                        }
-                        return null;
-                      },
-                      onSaved: (val) => formData["phone_site_office"] = val,
-                      onChanged: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          setState(
-                            () => hasPhoneOffice = value!.trim().isNotEmpty,
-                          );
-                          _updateNodeWithConditions("det_gen_newProperty");
-                        }
-                      },
-                    ),
-                    buildCustomTextField(
-                      label: "Email Address (Site Office):",
-                      hintText: "...",
-                      validator: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          return ValidationUtils.validateEmail(value);
-                        }
-                        return null;
-                      },
-                      onSaved: (val) => formData["email_site_office"] = val,
-                      onChanged: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          setState(
-                            () => hasEmailOffice = value!.trim().isNotEmpty,
-                          );
-                          _updateNodeWithConditions("det_gen_newProperty");
-                        }
-                      },
-                    ),
-                    buildCustomTextField(
-                      label: "Phone Number:",
-                      hintText: "...",
-                      keyboardType: TextInputType.phone,
-                      validator: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          return ValidationUtils.required(value);
-                        }
-                        return null;
-                      },
-                      onSaved: (val) => formData["phone"] = val,
-                      onChanged: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          setState(() => hasPhone = value!.trim().isNotEmpty);
-                          _updateNodeWithConditions("det_gen_newProperty");
-                        }
-                      },
-                    ),
-                    buildCustomTextField(
-                      label: "Email Address:",
-                      hintText: "...",
-                      validator: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          return ValidationUtils.validateEmail(value);
-                        }
-                        return null;
-                      },
-                      onSaved: (val) => formData["email"] = val,
-                      onChanged: (value) {
-                        if (isHasUKFinanceDisclosure == false) {
-                          setState(() => hasEmail = value!.trim().isNotEmpty);
-                          _updateNodeWithConditions("det_gen_newProperty");
-                        }
-                      },
-                    ),
+                    ],
                   ],
                 ),
               ),

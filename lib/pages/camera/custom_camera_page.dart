@@ -18,6 +18,8 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
   CameraController? _controller;
   List<CameraDescription>? cameras;
   bool isCameraInitialized = false;
+  bool hasPermission = false;
+  String? errorMessage;
   XFile? capturedImage;
   int selectedCameraIndex = 0;
 
@@ -28,39 +30,96 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
   }
 
   Future<void> _initializeCamera() async {
-    final status = await Permission.camera.request();
-    if (status.isGranted) {
-      cameras = await availableCameras();
-      if (cameras!.isNotEmpty) {
-        _controller = CameraController(cameras![0], ResolutionPreset.high);
-        await _controller!.initialize();
-        if (mounted) {
-          setState(() {
-            isCameraInitialized = true;
-          });
-        }
+    try {
+      // Xin tất cả quyền cần thiết cùng lúc
+      final cameraStatus = await Permission.camera.request();
+      final microphoneStatus = await Permission.microphone.request();
+      
+      if (!cameraStatus.isGranted) {
+        setState(() {
+          hasPermission = false;
+          if (cameraStatus.isPermanentlyDenied) {
+            errorMessage = 'Camera permission permanently denied. Please enable it in app settings.';
+          } else {
+            errorMessage = 'Camera permission is required to use this feature.';
+          }
+        });
+        return;
       }
-    } else {
-      debugPrint('Camera permission denied');
+
+      setState(() {
+        hasPermission = true;
+        errorMessage = null;
+      });
+      
+      // Khởi tạo camera
+      cameras = await availableCameras();
+      if (cameras == null || cameras!.isEmpty) {
+        setState(() {
+          errorMessage = 'No cameras available on this device.';
+        });
+        return;
+      }
+
+      _controller = CameraController(
+        cameras![selectedCameraIndex], 
+        ResolutionPreset.high,
+        enableAudio: microphoneStatus.isGranted,
+      );
+      
+      await _controller!.initialize();
+      
+      if (mounted) {
+        setState(() {
+          isCameraInitialized = true;
+          errorMessage = null;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error initializing camera: $e');
+      if (mounted) {
+        setState(() {
+          hasPermission = false;
+          isCameraInitialized = false;
+          errorMessage = 'Failed to initialize camera. Please try again.';
+        });
+      }
     }
   }
 
   Future<void> _switchCamera() async {
     if (cameras == null || cameras!.isEmpty) return;
+    
+    setState(() {
+      isCameraInitialized = false;
+    });
+    
     selectedCameraIndex = (selectedCameraIndex + 1) % cameras!.length;
     final cameraDescription = cameras![selectedCameraIndex];
-    await _controller?.dispose();
-    _controller = CameraController(cameraDescription, ResolutionPreset.high);
-
+    
     try {
+      await _controller?.dispose();
+      _controller = CameraController(
+        cameraDescription, 
+        ResolutionPreset.high,
+        enableAudio: true,
+      );
       await _controller!.initialize();
+      
       if (mounted) {
         setState(() {
           isCameraInitialized = true;
+          errorMessage = null;
         });
       }
     } catch (e) {
       debugPrint('Error switching camera: $e');
+      if (mounted) {
+        setState(() {
+          isCameraInitialized = false;
+          errorMessage = 'Failed to switch camera. Please try again.';
+        });
+      }
     }
   }
 
@@ -79,14 +138,30 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
   }
 
   Future<void> _pickFromGallery() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    try {
+      // Xin quyền gallery nếu cần
+      final status = await Permission.photos.request();
+      if (!status.isGranted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gallery permission is required')),
+        );
+        return;
+      }
 
-    if (image != null) {
-      setState(() {
-        capturedImage = image;
-      });
-      _showPreview();
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+      if (image != null) {
+        setState(() {
+          capturedImage = image;
+        });
+        _showPreview();
+      }
+    } catch (e) {
+      debugPrint('Error picking from gallery: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to access gallery')),
+      );
     }
   }
 
@@ -139,36 +214,76 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
                 ? CameraPreview(_controller!)
                 : Container(
                     color: AppColors.dark,
-                    child: const Center(
-                      child: CircularProgressIndicator(color: AppColors.white),
+                    child: Center(
+                      child: errorMessage != null
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.camera_alt_outlined,
+                                  color: AppColors.white,
+                                  size: 64,
+                                ),
+                                SizedBox(height: 16),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 32),
+                                  child: Text(
+                                    errorMessage!,
+                                    style: TextStyle(
+                                      color: AppColors.white,
+                                      fontSize: 16,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                if (errorMessage!.contains('permanently denied'))
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 16),
+                                    child: ElevatedButton(
+                                      onPressed: () => openAppSettings(),
+                                      child: Text('Open Settings'),
+                                    ),
+                                  ),
+                                if (!hasPermission && !errorMessage!.contains('permanently'))
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 16),
+                                    child: ElevatedButton(
+                                      onPressed: _initializeCamera,
+                                      child: Text('Grant Permission'),
+                                    ),
+                                  ),
+                              ],
+                            )
+                          : CircularProgressIndicator(color: AppColors.white),
                     ),
                   ),
           ),
-          Positioned(
-            top: 10,
-            left: 10,
-            child: Padding(
-              padding: EdgeInsets.all(
-                AppSizes.padding(context, SizeCategory.small),
-              ),
-              child: InkWell(
-                onTap: _switchCamera,
-                child: Icon(
-                  Icons.cameraswitch_rounded,
-                  color: AppColors.white,
-                  size: AppSizes.icon(context, SizeCategory.large),
+          // Camera controls - chỉ hiện khi camera đã sẵn sàng
+          if (isCameraInitialized && hasPermission) ...[
+            Positioned(
+              top: 10,
+              left: 10,
+              child: Padding(
+                padding: EdgeInsets.all(
+                  AppSizes.padding(context, SizeCategory.small),
+                ),
+                child: InkWell(
+                  onTap: _switchCamera,
+                  child: Icon(
+                    Icons.cameraswitch_rounded,
+                    color: AppColors.white,
+                    size: AppSizes.icon(context, SizeCategory.large),
+                  ),
                 ),
               ),
             ),
-          ),
 
-          Positioned(
-            bottom: 100,
-            left: 0,
-            right: 0,
-            child:
-                // Capture Button
-                GestureDetector(
+            Positioned(
+              bottom: 100,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: GestureDetector(
                   onTap: _capturePhoto,
                   child: Container(
                     width: AppSizes.container(context, SizeCategory.small),
@@ -188,29 +303,31 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
                     ),
                   ),
                 ),
-          ),
-
-          Positioned(
-            bottom: 10,
-            left: 10,
-            child: Padding(
-              padding: EdgeInsets.all(
-                AppSizes.padding(context, SizeCategory.small),
-              ),
-              child: Row(
-                children: [
-                  GalleryThumbnail(onTap: _pickFromGallery),
-                  SizedBox(
-                    width: AppSizes.padding(context, SizeCategory.small),
-                  ),
-                  Text(
-                    "Image Library",
-                    style: TextStyle(color: AppColors.white),
-                  ),
-                ],
               ),
             ),
-          ),
+
+            Positioned(
+              bottom: 10,
+              left: 10,
+              child: Padding(
+                padding: EdgeInsets.all(
+                  AppSizes.padding(context, SizeCategory.small),
+                ),
+                child: Row(
+                  children: [
+                    GalleryThumbnail(onTap: _pickFromGallery),
+                    SizedBox(
+                      width: AppSizes.padding(context, SizeCategory.small),
+                    ),
+                    Text(
+                      "Image Library",
+                      style: TextStyle(color: AppColors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

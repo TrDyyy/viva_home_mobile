@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:viva_home_mobile/cubits/checkbox_tree_cubit.dart';
 import 'package:viva_home_mobile/models/tree_config.dart';
+import 'package:viva_home_mobile/pages/details/details_propeties_page.dart';
 import 'pages/splash_page.dart';
 import 'utils/constants.dart';
 
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
             elevation: 0,
           ),
         ),
-        home: const SplashPage(),
+        home: const DetailsPage(username: "Tested",),
         debugShowCheckedModeBanner: false,
       ),
     );
