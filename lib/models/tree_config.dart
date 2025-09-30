@@ -7,7 +7,7 @@ class CheckboxTreesConfig {
       title: "Detail",
       treePath: "detail",
       level: 0,
-      childKeys: ["det_gen", "det_ext"],
+      childKeys: ["det_gen", "det_ext", "det_int", "det_serv", "det_add"],
       checkSource: CheckSource.auto,
     ),
     //General leaf
@@ -157,6 +157,55 @@ class CheckboxTreesConfig {
       treePath: "detail.external.outbuildings",
       level: 2,
       parentKey: "det_ext",
+      checkSource: CheckSource.auto,
+    ),
+
+    //Internal leaf
+    "det_int": CheckBoxTreeNode(
+      key: "det_int",
+      title: "Internal",
+      treePath: "detail.internal",
+      level: 1,
+      childKeys: ["det_int_floors"],
+      parentKey: "det_root",
+      checkSource: CheckSource.auto,
+    ),
+    "det_int_floors": CheckBoxTreeNode(
+      key: "det_int_floors",
+      title: "Floors",
+      treePath: "detail.internal.floors",
+      level: 2,
+      parentKey: "det_int",
+      checkSource: CheckSource.auto,
+    ),
+
+    //Setting leaf
+    "det_serv": CheckBoxTreeNode(
+      key: "det_serv",
+      title: "Services",
+      treePath: "detail.services",
+      level: 1,
+      childKeys: [
+        "det_serv_propServ",
+        "det_serv_additional_features",
+      ],
+      parentKey: "det_root",
+      checkSource: CheckSource.auto,
+    ),
+    "det_serv_propServ": CheckBoxTreeNode(
+      key: "det_serv_propServ",
+      title: "Services",
+      treePath: "detail.services.services",
+      level: 2,
+      parentKey: "det_serv",
+      checkSource: CheckSource.auto,
+    ),
+    "det_serv_additional_features": CheckBoxTreeNode(
+      key: "det_serv_additional_features",
+      title: "Additional Features",
+      treePath: "detail.services.additional_features",
+      level: 2,
+      parentKey: "det_serv",
       checkSource: CheckSource.auto,
     ),
   };

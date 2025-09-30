@@ -179,12 +179,14 @@ class FormFieldGroup extends StatelessWidget {
 FormFieldGroup buildComboBoxField({
   onSaved,
   validator,
-  required String label,
+  String? label,
+  bool customLabelText = false,
   required List<String> items,
   required Function(String?) onChanged,
 }) {
   return FormFieldGroup(
     label: label,
+    customLabelText: customLabelText,
     items: [
       CustomComboBox<String>(
         items: items,
@@ -283,7 +285,7 @@ FormFieldGroup buildRadioField<T>({
 }
 
 // Helper for "If Other, please specify" field
-Widget buildOtherSpecifyField({
+FormFieldGroup buildOtherSpecifyField({
   required BuildContext context,
   String? Function(String?)? validator,
   void Function(String?)? onSaved,
@@ -329,10 +331,11 @@ Widget buildOtherSpecifyField({
   );
 }
 
-Widget buildCheckboxField<T>({
+FormFieldGroup buildCheckboxField<T>({
   required BuildContext context,
   String? label,
   bool customLabelText = false,
+  bool isVertical = false,
   required List<CheckboxOption<T>> options,
   required List<T> values,
   required ValueChanged<List<T>> onChanged,
@@ -348,34 +351,97 @@ Widget buildCheckboxField<T>({
         validator: validator,
         onSaved: onSaved,
         builder: (field) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomCheckboxGroup<T>(
-                options: options,
-                values: field.value ?? [],
-                onChanged: (newValues) {
-                  field.didChange(newValues);
-                  onChanged(newValues);
-                },
-              ),
-              if (field.hasError)
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: AppSizes.padding(context, SizeCategory.small),
-                  ),
-                  child: Text(
-                    field.errorText!,
-                    style: TextStyle(
-                      color: AppColors.error,
-                      fontSize: AppSizes.font(context, SizeCategory.medium),
+          return Padding(
+            padding:  EdgeInsets.symmetric(horizontal: AppSizes.padding(context, SizeCategory.small)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomCheckboxGroup<T>(
+                  options: options,
+                  isVertical: isVertical,
+                  values: field.value ?? [],
+                  onChanged: (newValues) {
+                    field.didChange(newValues);
+                    onChanged(newValues);
+                  },
+                ),
+                if (field.hasError)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: AppSizes.padding(context, SizeCategory.small),
+                    ),
+                    child: Text(
+                      field.errorText!,
+                      style: TextStyle(
+                        color: AppColors.error,
+                        fontSize: AppSizes.font(context, SizeCategory.medium),
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           );
         },
       ),
     ],
   );
 }
+
+
+class CustomContainerWidget extends StatelessWidget {
+  final String label;
+  final bool? showLabel;
+  final List<Widget> children;
+  final Color? labelColor;
+  final Color? borderColor;
+  final Color? backgroundColor;
+
+  const CustomContainerWidget({
+    super.key,
+    required this.label,
+    this.showLabel = true,
+    required this.children,
+    this.labelColor,
+    this.borderColor,
+    this.backgroundColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: borderColor ?? AppColors.primaryTeal,
+          width: 2,
+        ),
+        borderRadius: BorderRadius.circular(
+          AppSizes.radius(context, SizeCategory.large),
+        ),
+        color: backgroundColor ?? Colors.transparent,
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(AppSizes.padding(context, SizeCategory.large)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (showLabel == true) ...[
+              Text(
+                label.toUpperCase(),
+                style: TextStyle(
+                  fontSize: AppSizes.font(context, SizeCategory.large),
+                  fontWeight: FontWeight.w600,
+                  color: labelColor ?? AppColors.primaryTeal,
+                  letterSpacing: 0.8,
+                ),
+              ),
+              SizedBox(height: AppSizes.padding(context, SizeCategory.small)),
+            ],
+            ...children,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
