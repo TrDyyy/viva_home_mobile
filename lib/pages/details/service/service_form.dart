@@ -8,6 +8,7 @@ import 'package:viva_home_mobile/utils/custom_checkbox_group.dart';
 import 'package:viva_home_mobile/utils/radio_group.dart';
 import 'package:viva_home_mobile/utils/validation.dart';
 import 'package:viva_home_mobile/widgets/base_page_widget.dart';
+import 'package:viva_home_mobile/widgets/custom_date_field.dart';
 import 'package:viva_home_mobile/widgets/form_widget.dart';
 
 class ServiceFormPage extends StatefulWidget {
@@ -24,6 +25,13 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
   bool _hasInitialized = false;
   List<String> selectedServices = [];
   String? centralHeating;
+  bool? hasBoiler;
+  bool? hasBoilerServiced;
+  bool? hasBoilerReplaced;
+  bool? hasBoilerUnderGuarantee;
+
+  bool hasDate = false;
+  bool hasBoilerGuaranteeExpiryDate = false;
 
   @override
   void didChangeDependencies() {
@@ -34,6 +42,29 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
       );
       _hasInitialized = true;
     }
+  }
+
+  bool shouldCheckPropServices() =>
+      selectedServices.isNotEmpty &&
+          centralHeating != null &&
+          hasBoiler == false ||
+      (hasDate == true &&
+          hasBoilerGuaranteeExpiryDate == true &&
+          hasBoilerReplaced != null &&
+          hasBoilerUnderGuarantee != null &&
+          hasBoilerServiced != null);
+
+  void _updateNodeWithConditions(String nodeKey) {
+    late bool shouldCheck;
+
+    switch (nodeKey) {
+      case "det_serv_propServ":
+        shouldCheck = shouldCheckPropServices();
+        break;
+      default:
+        shouldCheck = false;
+    }
+    context.read<GlobalTreeManager>().toggleNode(nodeKey, shouldCheck);
   }
 
   void _handleSubmit() {
@@ -116,7 +147,11 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
                     SizedBox(
                       height: AppSizes.padding(context, SizeCategory.medium),
                     ),
-                    buildOtherSpecifyField(context: context),
+                    buildOtherSpecifyField(
+                      context: context,
+                      onSaved: (value) =>
+                          formData['other_specify_services'] = value,
+                    ),
                     SizedBox(
                       height: AppSizes.padding(context, SizeCategory.medium),
                     ),
@@ -129,23 +164,134 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
                         RadioOption(value: "None", label: "None"),
                       ],
                       groupValue: centralHeating,
-                      onChanged: (val) => setState(() => centralHeating = val),
+                      onChanged: (val) => {
+                        setState(() => centralHeating = val),
+                        _updateNodeWithConditions("det_serv_propServ"),
+                      },
+                      validator: ValidationUtils.validateRequiredOption,
+                      onSaved: (val) => formData["central_heating"] = val,
                     ),
                     SizedBox(
                       height: AppSizes.padding(context, SizeCategory.medium),
                     ),
                     CustomContainerWidget(
-                      label: '',
                       showLabel: false,
                       children: [
-                        buildCustomTextField(
-                          label: 'If yes, please provide details below:',
-                          hintText: 'Enter details',
-                          maxLines: 4,
-                          validator: (value) => null,
-                          onSaved: (value) =>
-                              formData["central_heating_details"] = value,
+                        buildRadioField(
+                          context: context,
+                          label: 'Do you have a boiler?',
+                          options: [
+                            RadioOption(value: true, label: "Yes"),
+                            RadioOption(value: false, label: "No"),
+                          ],
+                          groupValue: hasBoiler,
+                          onChanged: (val) => {
+                            setState(() => hasBoiler = val),
+                            _updateNodeWithConditions("det_serv_propServ"),
+                          },
+                          validator: ValidationUtils.validateRequiredOption,
+                          onSaved: (val) => formData["has_boiler"] = val,
                         ),
+                        if (hasBoiler == true) ...[
+                          Text(
+                            "If ‘YES’ please complete the following questions below:",
+                          ),
+                          SizedBox(
+                            height: AppSizes.padding(
+                              context,
+                              SizeCategory.medium,
+                            ),
+                          ),
+                          buildRadioField(
+                            context: context,
+                            label: 'Has your boiler been serviced?',
+                            options: [
+                              RadioOption(value: true, label: "Yes"),
+                              RadioOption(value: false, label: "No"),
+                            ],
+                            groupValue: hasBoilerServiced,
+                            onChanged: (val) => {
+                              setState(() => hasBoilerServiced = val),
+                              _updateNodeWithConditions("det_serv_propServ"),
+                            },
+                            validator: ValidationUtils.validateRequiredOption,
+                            onSaved: (val) =>
+                                formData["has_boiler_serviced"] = val,
+                          ),
+                          buildRadioField(
+                            context: context,
+                            label: 'Has your boiler been replaced recently?',
+                            options: [
+                              RadioOption(value: true, label: "Yes"),
+                              RadioOption(value: false, label: "No"),
+                            ],
+                            groupValue: hasBoilerReplaced,
+                            onChanged: (val) => {
+                              setState(() => hasBoilerReplaced = val),
+                              _updateNodeWithConditions("det_serv_propServ"),
+                            },
+                            validator: ValidationUtils.validateRequiredOption,
+                            onSaved: (val) =>
+                                formData["has_boiler_replaced"] = val,
+                          ),
+                          buildRadioField(
+                            context: context,
+                            label: 'Is your boiler under guarantee?',
+                            options: [
+                              RadioOption(value: true, label: "Yes"),
+                              RadioOption(value: false, label: "No"),
+                            ],
+                            groupValue: hasBoilerUnderGuarantee,
+                            onChanged: (val) => {
+                              setState(() => hasBoilerUnderGuarantee = val),
+                              _updateNodeWithConditions("det_serv_propServ"),
+                            },
+                            validator: ValidationUtils.validateRequiredOption,
+                            onSaved: (val) =>
+                                formData["has_boiler_under_guarantee"] = val,
+                          ),
+                          SizedBox(
+                            height: AppSizes.padding(
+                              context,
+                              SizeCategory.medium,
+                            ),
+                          ),
+                          buildCustomDateField(
+                            label:
+                                "Boiler Guarantee expiry date (If applicable):",
+                            mode: DateInputMode.mmyy,
+                            onChanged: (date) {
+                              setState(() {
+                                hasBoilerGuaranteeExpiryDate = date != null;
+                                _updateNodeWithConditions("det_serv_propServ");
+                              });
+                            },
+                            onSaved: (date) {
+                              formData["boiler_guarantee_expiry_date"] = date;
+                            },
+                            validator: ValidationUtils.requiredDateTime,
+                          ),
+                          SizedBox(
+                            height: AppSizes.padding(
+                              context,
+                              SizeCategory.medium,
+                            ),
+                          ),
+                          buildCustomDateField(
+                            label: "Date of last service:",
+                            mode: DateInputMode.ddmmyy,
+                            onChanged: (date) {
+                              setState(() {
+                                hasDate = date != null;
+                                _updateNodeWithConditions("det_serv_propServ");
+                              });
+                            },
+                            onSaved: (date) {
+                              formData["date_last_service"] = date;
+                            },
+                            validator: ValidationUtils.requiredDateTime,
+                          ),
+                        ],
                       ],
                     ),
                   ],

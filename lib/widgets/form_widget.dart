@@ -5,6 +5,7 @@ import 'package:viva_home_mobile/utils/custom_text_field.dart';
 import 'package:viva_home_mobile/utils/radio_group.dart';
 import 'package:viva_home_mobile/widgets/checkbox_individual_widget.dart';
 import 'package:viva_home_mobile/widgets/custom_combobox.dart';
+import 'package:viva_home_mobile/widgets/custom_date_field.dart';
 
 class FormSection extends StatelessWidget {
   final List<Widget> children;
@@ -331,6 +332,7 @@ FormFieldGroup buildOtherSpecifyField({
   );
 }
 
+//Helper for Checkbox field
 FormFieldGroup buildCheckboxField<T>({
   required BuildContext context,
   String? label,
@@ -352,7 +354,9 @@ FormFieldGroup buildCheckboxField<T>({
         onSaved: onSaved,
         builder: (field) {
           return Padding(
-            padding:  EdgeInsets.symmetric(horizontal: AppSizes.padding(context, SizeCategory.small)),
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSizes.padding(context, SizeCategory.small),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -387,9 +391,35 @@ FormFieldGroup buildCheckboxField<T>({
   );
 }
 
+//Helper for date field
+FormFieldGroup buildCustomDateField({
+  required String label,
+  required DateInputMode mode,
+  Color colorBorder = AppColors.darkGray,
+  bool enabled = true,
+  TextInputType? keyboardType,
+  Widget? suffixIcon,
+  int? maxLength,
+  int? maxLines,
+  String? Function(DateTime?)? validator,
+  void Function(DateTime?)? onSaved,
+  void Function(DateTime?)? onChanged,
+}) {
+  return FormFieldGroup(
+    label: label,
+    items: [
+      CustomDateFormField(
+        mode: mode,
+        validator: validator,
+        onChanged: onChanged,
+        onSaved: onSaved,
+      ),
+    ],
+  );
+}
 
 class CustomContainerWidget extends StatelessWidget {
-  final String label;
+  final String? label;
   final bool? showLabel;
   final List<Widget> children;
   final Color? labelColor;
@@ -398,7 +428,7 @@ class CustomContainerWidget extends StatelessWidget {
 
   const CustomContainerWidget({
     super.key,
-    required this.label,
+    this.label,
     this.showLabel = true,
     required this.children,
     this.labelColor,
@@ -427,7 +457,7 @@ class CustomContainerWidget extends StatelessWidget {
           children: [
             if (showLabel == true) ...[
               Text(
-                label.toUpperCase(),
+                label!.toUpperCase(),
                 style: TextStyle(
                   fontSize: AppSizes.font(context, SizeCategory.large),
                   fontWeight: FontWeight.w600,
@@ -444,4 +474,3 @@ class CustomContainerWidget extends StatelessWidget {
     );
   }
 }
-

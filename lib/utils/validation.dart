@@ -49,4 +49,14 @@ class ValidationUtils {
     }
     return null;
   }
+
+  static String? requiredDateTime(
+    DateTime? value, {
+    String fieldName = "This field",
+  }) {
+    if (value == null) {
+      return "$fieldName is required";
+    }
+    return null;
+  }
 }
