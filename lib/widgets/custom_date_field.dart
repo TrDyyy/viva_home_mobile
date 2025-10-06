@@ -101,8 +101,8 @@ class _CustomDateFieldState extends State<_CustomDateField> {
     // Handle 2-digit year conversion for mmyy mode
     if (widget.mode == DateInputMode.mmyy && yy != null) {
       if (yy < 100) {
-        // For 2-digit years: 00-30 = 2000-2030, 31-99 = 1931-1999
-        yy = yy <= 30 ? 2000 + yy : 1900 + yy;
+        // For 2-digit years: 00-25 = 2000-2025, 26-99 = 1926-1999
+        yy = yy <= 25 ? 2000 + yy : 1900 + yy;
       }
     }
 

@@ -101,7 +101,6 @@ class _LoginFormState extends State<LoginForm> {
                 });
               },
             ),
-            prefixIcon: null,
           ),
 
           SizedBox(height: AppSizes.padding(context, SizeCategory.small)),

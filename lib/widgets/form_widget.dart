@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
+import 'package:viva_home_mobile/utils/custom_button.dart';
 import 'package:viva_home_mobile/utils/custom_checkbox_group.dart';
 import 'package:viva_home_mobile/utils/custom_text_field.dart';
 import 'package:viva_home_mobile/utils/radio_group.dart';
@@ -10,10 +11,12 @@ import 'package:viva_home_mobile/widgets/custom_date_field.dart';
 class FormSection extends StatelessWidget {
   final List<Widget> children;
   final EdgeInsetsGeometry padding;
+  final VoidCallback onPressed;
 
   const FormSection({
     super.key,
     required this.children,
+    required this.onPressed,
     this.padding = const EdgeInsets.all(16),
   });
 
@@ -51,7 +54,39 @@ class FormSection extends StatelessWidget {
         ),
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          child: Column(children: children),
+          child: Column(
+            children: [
+              ...children,
+              // Action buttons
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSizes.padding(context, SizeCategory.small),
+                  vertical:
+                      AppSizes.padding(context, SizeCategory.xxxlarge) * 2,
+                ),
+                child: Column(
+                  children: [
+                    CustomButton(
+                      text: "Save & Next",
+                      onPressed: onPressed,
+                      backgroundColor: AppColors.darkTeal,
+                      foregroundColor: AppColors.white,
+                    ),
+                    SizedBox(
+                      height: AppSizes.padding(context, SizeCategory.medium),
+                    ),
+                    CustomButton(
+                      text: "Back",
+                      onPressed: () => Navigator.of(context).pop(),
+                      backgroundColor: AppColors.white,
+                      foregroundColor: AppColors.darkTeal,
+                      borderColor: AppColors.accent,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

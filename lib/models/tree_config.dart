@@ -187,7 +187,8 @@ class CheckboxTreesConfig {
       level: 1,
       childKeys: [
         "det_serv_propServ",
-        "det_serv_additional_features",
+        "det_serv_guarantees",
+        "det_serv_warranties",
       ],
       parentKey: "det_root",
       checkSource: CheckSource.auto,
@@ -200,12 +201,47 @@ class CheckboxTreesConfig {
       parentKey: "det_serv",
       checkSource: CheckSource.auto,
     ),
-    "det_serv_additional_features": CheckBoxTreeNode(
-      key: "det_serv_additional_features",
-      title: "Additional Features",
-      treePath: "detail.services.additional_features",
+    "det_serv_guarantees": CheckBoxTreeNode(
+      key: "det_serv_guarantees",
+      title: "Guarantees",
+      treePath: "detail.services.guarantees",
       level: 2,
       parentKey: "det_serv",
+      checkSource: CheckSource.auto,
+    ),
+    "det_serv_warranties": CheckBoxTreeNode(
+      key: "det_serv_warranties",
+      title: "Warranties",
+      treePath: "detail.services.warranties",
+      level: 2,
+      parentKey: "det_serv",
+      checkSource: CheckSource.auto,
+    ),
+
+    //Additional leaf
+    "det_add": CheckBoxTreeNode(
+      key: "det_add",
+      title: "Additional",
+      treePath: "detail.additional",
+      level: 1,
+      childKeys: ["det_add_roads", "det_add_specialrisks"],
+      parentKey: "det_root",
+      checkSource: CheckSource.auto,
+    ),
+    "det_add_roads": CheckBoxTreeNode(
+      key: "det_add_roads",
+      title: "Roads",
+      treePath: "detail.additional.roads",
+      level: 2,
+      parentKey: "det_add",
+      checkSource: CheckSource.auto,
+    ),
+    "det_add_specialrisks": CheckBoxTreeNode(
+      key: "det_add_specialrisks",
+      title: "Special Risks",
+      treePath: "detail.additional.specialRisks",
+      level: 2,
+      parentKey: "det_add",
       checkSource: CheckSource.auto,
     ),
   };

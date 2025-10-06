@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:viva_home_mobile/cubits/checkbox_tree_cubit.dart';
 import 'package:viva_home_mobile/models/tree_config.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
-import 'package:viva_home_mobile/utils/custom_button.dart';
 import 'package:viva_home_mobile/utils/custom_checkbox_group.dart';
 import 'package:viva_home_mobile/utils/radio_group.dart';
 import 'package:viva_home_mobile/utils/validation.dart';
@@ -24,6 +23,8 @@ final Map<String, dynamic> formData = {};
 class _ServiceFormPageState extends State<ServiceFormPage> {
   bool _hasInitialized = false;
   List<String> selectedServices = [];
+  List<String> selectedGuaranteesAreas = [];
+  List<String> selectedPropertyWarranties = [];
   String? centralHeating;
   bool? hasBoiler;
   bool? hasBoilerServiced;
@@ -32,6 +33,9 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
 
   bool hasDate = false;
   bool hasBoilerGuaranteeExpiryDate = false;
+
+  bool? isDampProofCourse;
+  bool hasWallInsulationExpiryDate = false;
 
   @override
   void didChangeDependencies() {
@@ -54,12 +58,21 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
           hasBoilerUnderGuarantee != null &&
           hasBoilerServiced != null);
 
+  bool shouldCheckGuarantees() =>
+      selectedGuaranteesAreas.isNotEmpty && isDampProofCourse == false ||
+      (hasWallInsulationExpiryDate == true);
   void _updateNodeWithConditions(String nodeKey) {
     late bool shouldCheck;
 
     switch (nodeKey) {
       case "det_serv_propServ":
         shouldCheck = shouldCheckPropServices();
+        break;
+      case "det_serv_guarantees":
+        shouldCheck = shouldCheckGuarantees();
+        break;
+      case "det_serv_warranties":
+        shouldCheck = selectedPropertyWarranties.isNotEmpty;
         break;
       default:
         shouldCheck = false;
@@ -91,6 +104,7 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
         customBody: Form(
           key: _formKey,
           child: FormSection(
+            onPressed: _handleSubmit,
             children: [
               FormFieldWrapper(
                 label: "Services",
@@ -297,31 +311,176 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
                   ],
                 ),
               ),
-
-              // Action buttons
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSizes.padding(context, SizeCategory.small),
-                  vertical:
-                      AppSizes.padding(context, SizeCategory.xxxlarge) * 2,
-                ),
+              SizedBox(height: AppSizes.padding(context, SizeCategory.large)),
+              FormFieldWrapper(
+                label: "Guarantees",
+                nodeKey: "det_serv_guarantees",
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomButton(
-                      text: "Save & Next",
-                      onPressed: _handleSubmit,
-                      backgroundColor: AppColors.darkTeal,
-                      foregroundColor: AppColors.white,
+                    buildCheckboxField<String>(
+                      context: context,
+                      isVertical: true,
+                      label:
+                          'Please select all applicable areas you have under guarantee?',
+                      options: [
+                        CheckboxOption(value: "windows", label: "Windows"),
+                        CheckboxOption(value: "doors", label: "Doors"),
+                        CheckboxOption(
+                          value: "log_multi_flue_burner",
+                          label: "Log / Multi flue burner",
+                        ),
+                        CheckboxOption(
+                          value: "roof_insulation",
+                          label: "Roof Insulation",
+                        ),
+                        CheckboxOption(
+                          value: "hetas_building_regulations",
+                          label: "Hetas / Building regulations",
+                        ),
+                        CheckboxOption(
+                          value: "wall_insulation",
+                          label: "Wall Insulation",
+                        ),
+                        CheckboxOption(
+                          value: "planning_permission",
+                          label: "Planning permission",
+                        ),
+                        CheckboxOption(
+                          value: "building_regulations",
+                          label: "Building regulations",
+                        ),
+                        CheckboxOption(
+                          value: "timber_treatment",
+                          label: "Timber Treatment",
+                        ),
+                        CheckboxOption(
+                          value: "injection_cavity",
+                          label: "Injection Cavity",
+                        ),
+                        CheckboxOption(
+                          value: "other",
+                          label: "Other 'specify below'",
+                        ),
+                      ],
+                      values: selectedGuaranteesAreas,
+                      onChanged: (values) {
+                        setState(() => selectedGuaranteesAreas = values);
+                        _updateNodeWithConditions("det_serv_guarantees");
+                      },
+                      validator: ValidationUtils.validateRequiredOption,
+                      onSaved: (values) => formData["guarantee_areas"] = values,
                     ),
                     SizedBox(
                       height: AppSizes.padding(context, SizeCategory.medium),
                     ),
-                    CustomButton(
-                      text: "Back",
-                      onPressed: () => Navigator.of(context).pop(),
-                      backgroundColor: AppColors.white,
-                      foregroundColor: AppColors.darkTeal,
-                      borderColor: AppColors.accent,
+                    buildOtherSpecifyField(
+                      context: context,
+                      onSaved: (value) =>
+                          formData['other_specify_guarantees'] = value,
+                    ),
+                    SizedBox(
+                      height: AppSizes.padding(context, SizeCategory.medium),
+                    ),
+                    CustomContainerWidget(
+                      label: 'Wall Insulation',
+                      children: [
+                        buildRadioField(
+                          context: context,
+                          label: 'Damp Proof course?',
+                          options: [
+                            RadioOption(value: true, label: "Yes"),
+                            RadioOption(value: false, label: "No"),
+                          ],
+                          groupValue: isDampProofCourse,
+                          onChanged: (val) {
+                            setState(() {
+                              isDampProofCourse = val;
+                            });
+                            _updateNodeWithConditions("det_serv_guarantees");
+                          },
+                          validator: ValidationUtils.validateRequiredOption,
+                          onSaved: (val) =>
+                              formData["is_damp_proof_course"] = val,
+                        ),
+                        if (isDampProofCourse == true) ...[
+                          SizedBox(
+                            height: AppSizes.padding(
+                              context,
+                              SizeCategory.medium,
+                            ),
+                          ),
+                          buildCustomDateField(
+                            label: "If ‘Yes’ - Give Expiry of guarantee",
+                            mode: DateInputMode.mmyy,
+                            onChanged: (date) {
+                              setState(() {
+                                hasWallInsulationExpiryDate = date != null;
+                              });
+                              _updateNodeWithConditions("det_serv_guarantees");
+                            },
+                            onSaved: (date) {
+                              formData["wall_insulation_expiry_date"] = date;
+                            },
+                            validator: ValidationUtils.requiredDateTime,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
+              FormFieldWrapper(
+                label: "Warranties",
+                nodeKey: "det_serv_warranties",
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildCheckboxField<String>(
+                      context: context,
+                      isVertical: true,
+                      label:
+                          'Please select applicable warranties for the property:',
+                      options: [
+                        CheckboxOption(value: "NHBC", label: "NHBC"),
+                        CheckboxOption(
+                          value: "zurich_municipal",
+                          label: "Zurich Municipal",
+                        ),
+                        CheckboxOption(
+                          value: "architect_certificate",
+                          label: "Architect Certificate",
+                        ),
+                        CheckboxOption(
+                          value: "premier_guarantee",
+                          label: "Premier Guarantee",
+                        ),
+                        CheckboxOption(
+                          value: "no_warranty",
+                          label: "No Warranty",
+                        ),
+                        CheckboxOption(
+                          value: "other",
+                          label: "Other 'specify below'",
+                        ),
+                      ],
+                      values: selectedPropertyWarranties,
+                      onChanged: (values) {
+                        setState(() => selectedPropertyWarranties = values);
+                        _updateNodeWithConditions("det_serv_warranties");
+                      },
+                      validator: ValidationUtils.validateRequiredOption,
+                      onSaved: (values) =>
+                          formData["property_warranties"] = values,
+                    ),
+                    SizedBox(
+                      height: AppSizes.padding(context, SizeCategory.medium),
+                    ),
+                    buildOtherSpecifyField(
+                      context: context,
+                      onSaved: (value) =>
+                          formData['other_specify_guarantees'] = value,
                     ),
                   ],
                 ),

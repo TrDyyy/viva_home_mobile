@@ -31,7 +31,6 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
 
   Future<void> _initializeCamera() async {
     try {
-      // Xin tất cả quyền cần thiết cùng lúc
       final cameraStatus = await Permission.camera.request();
       final microphoneStatus = await Permission.microphone.request();
       
@@ -51,8 +50,7 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
         hasPermission = true;
         errorMessage = null;
       });
-      
-      // Khởi tạo camera
+    
       cameras = await availableCameras();
       if (cameras == null || cameras!.isEmpty) {
         setState(() {
@@ -139,9 +137,9 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
 
   Future<void> _pickFromGallery() async {
     try {
-      // Xin quyền gallery nếu cần
       final status = await Permission.photos.request();
       if (!status.isGranted) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Gallery permission is required')),
         );
@@ -159,6 +157,7 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
       }
     } catch (e) {
       debugPrint('Error picking from gallery: $e');
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to access gallery')),
       );
@@ -258,7 +257,6 @@ class _CustomCameraPageState extends State<CustomCameraPage> {
                     ),
                   ),
           ),
-          // Camera controls - chỉ hiện khi camera đã sẵn sàng
           if (isCameraInitialized && hasPermission) ...[
             Positioned(
               top: 10,

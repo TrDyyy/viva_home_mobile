@@ -41,9 +41,11 @@ class _InternalFormPageState extends State<InternalFormPage> {
     return true;
   }
 
-  bool shouldCheckFloors() => shouldCheckListFloors() &&
-      hasCertificates != null &&
-      isCellarTanked == false || (isCellarTanked == true && hasRequiredCertificates != null);
+  bool shouldCheckFloors() =>
+      shouldCheckListFloors() &&
+          hasCertificates != null &&
+          isCellarTanked == false ||
+      (isCellarTanked == true && hasRequiredCertificates != null);
 
   void _updateNodeWithConditions(String nodeKey) {
     late bool shouldCheck;
@@ -118,6 +120,7 @@ class _InternalFormPageState extends State<InternalFormPage> {
         customBody: Form(
           key: _formKey,
           child: FormSection(
+            onPressed: _handleSubmit,
             children: [
               // Floors
               FormFieldWrapper(
@@ -126,9 +129,21 @@ class _InternalFormPageState extends State<InternalFormPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FormFieldGroup(label:'Add exisiting floors:', items: [
-                      Text("Please add all floors present in the property. Starting from the lowest level eg. Cellar / Basement, Ground, Floor 1, Loft.",style: TextStyle(fontSize: AppSizes.font(context, SizeCategory.medium), color: AppColors.dark)),
-                    ]),
+                    FormFieldGroup(
+                      label: 'Add exisiting floors:',
+                      items: [
+                        Text(
+                          "Please add all floors present in the property. Starting from the lowest level eg. Cellar / Basement, Ground, Floor 1, Loft.",
+                          style: TextStyle(
+                            fontSize: AppSizes.font(
+                              context,
+                              SizeCategory.medium,
+                            ),
+                            color: AppColors.dark,
+                          ),
+                        ),
+                      ],
+                    ),
                     ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -208,8 +223,7 @@ class _InternalFormPageState extends State<InternalFormPage> {
                           onChanged: (value) {
                             setState(() {
                               isCellarTanked = value;
-                              if(isCellarTanked == false)
-                              {
+                              if (isCellarTanked == false) {
                                 hasRequiredCertificates = null;
                               }
                             });
@@ -245,35 +259,6 @@ class _InternalFormPageState extends State<InternalFormPage> {
                             },
                           ),
                       ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Action buttons
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSizes.padding(context, SizeCategory.small),
-                  vertical:
-                      AppSizes.padding(context, SizeCategory.xxxlarge) * 2,
-                ),
-                child: Column(
-                  children: [
-                    CustomButton(
-                      text: "Save & Next",
-                      onPressed: _handleSubmit,
-                      backgroundColor: AppColors.darkTeal,
-                      foregroundColor: AppColors.white,
-                    ),
-                    SizedBox(
-                      height: AppSizes.padding(context, SizeCategory.medium),
-                    ),
-                    CustomButton(
-                      text: "Back",
-                      onPressed: () => Navigator.of(context).pop(),
-                      backgroundColor: AppColors.white,
-                      foregroundColor: AppColors.darkTeal,
-                      borderColor: AppColors.accent,
                     ),
                   ],
                 ),

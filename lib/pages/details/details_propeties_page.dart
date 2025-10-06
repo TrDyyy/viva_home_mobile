@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:viva_home_mobile/pages/details/additional/additional_page.dart';
 import 'package:viva_home_mobile/pages/details/external/external_page.dart';
 import 'package:viva_home_mobile/pages/details/general/general_page.dart';
 import 'package:viva_home_mobile/pages/details/internal/internal_form.dart';
-import 'package:viva_home_mobile/pages/details/service/service_form.dart';
+import 'package:viva_home_mobile/pages/details/service/service_page.dart';
 import 'package:viva_home_mobile/utils/constants.dart';
 import 'package:viva_home_mobile/widgets/base_page_widget.dart';
 
@@ -80,18 +81,21 @@ class _DetailsPageState extends State<DetailsPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ServiceFormPage()),
+                MaterialPageRoute(builder: (context) => ServicePage(username: widget.username)),
               );
             },
           ),
           CardItemConfig(
             icon: Icons.add_box_outlined,
             title: AppStrings.additionalDetails,
-            nodeKey: "det_gen",
+            nodeKey: "det_add",
             isEnabled: true,
             borders: {},
             onTap: () {
-              // Navigate to additional details
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AdditionalPage(username: widget.username)),
+              );
             },
           ),
         ],

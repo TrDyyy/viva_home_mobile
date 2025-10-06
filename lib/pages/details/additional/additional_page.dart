@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:viva_home_mobile/pages/details/service/service_form.dart';
+import 'package:viva_home_mobile/pages/details/additional/additional_form.dart';
+
 import 'package:viva_home_mobile/utils/constants.dart';
 import 'package:viva_home_mobile/widgets/base_page_widget.dart';
 
-class ServicePage extends StatefulWidget {
-  const ServicePage({super.key, required this.username});
+class AdditionalPage extends StatefulWidget {
+  const AdditionalPage({super.key, required this.username});
 
   final String username;
 
   @override
-  State<ServicePage> createState() => _ServicePageState();
+  State<AdditionalPage> createState() => _AdditionalPageState();
 }
 
-class _ServicePageState extends State<ServicePage> {
+class _AdditionalPageState extends State<AdditionalPage> {
   @override
   Widget build(BuildContext context) {
     return BasePageWidget(
@@ -26,19 +27,19 @@ class _ServicePageState extends State<ServicePage> {
         cards: [],
         modalSections: [
           ModalSection(
-            title: 'Service',
+            title: 'AdditionalPage',
             subtitle: 'Completed',
             items: [
-              SectionItem(text: 'Services', nodeKey: 'det_serv_propServ'),
-              SectionItem(text: 'Guarantees', nodeKey: 'det_serv_guarantees'),
-              SectionItem(text: 'Warranties', nodeKey: 'det_serv_warranties'),
+              SectionItem(text: 'Roads', nodeKey: 'det_add_roads'),
+              SectionItem(
+                text: 'Special Risks',
+                nodeKey: 'det_add_specialrisks',
+              ),
             ],
             onActionPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const ServiceFormPage(),
-                ),
+                MaterialPageRoute(builder: (context) => AdditionalForm()),
               );
             },
           ),

@@ -126,6 +126,7 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
         customBody: Form(
           key: _formKey,
           child: FormSection(
+            onPressed: _handleSubmit,
             children: [
               // Dwelling type
               FormFieldWrapper(
@@ -419,35 +420,6 @@ class _ExternalFormPageState extends State<ExternalFormPage> {
                       height: AppSizes.padding(context, SizeCategory.medium),
                     ),
                     buildOtherSpecifyField(context: context),
-                  ],
-                ),
-              ),
-
-              // Action buttons
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSizes.padding(context, SizeCategory.small),
-                  vertical:
-                      AppSizes.padding(context, SizeCategory.xxxlarge) * 2,
-                ),
-                child: Column(
-                  children: [
-                    CustomButton(
-                      text: "Save & Next",
-                      onPressed: _handleSubmit,
-                      backgroundColor: AppColors.darkTeal,
-                      foregroundColor: AppColors.white,
-                    ),
-                    SizedBox(
-                      height: AppSizes.padding(context, SizeCategory.medium),
-                    ),
-                    CustomButton(
-                      text: "Back",
-                      onPressed: () => Navigator.of(context).pop(),
-                      backgroundColor: AppColors.white,
-                      foregroundColor: AppColors.darkTeal,
-                      borderColor: AppColors.accent,
-                    ),
                   ],
                 ),
               ),

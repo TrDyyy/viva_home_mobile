@@ -205,6 +205,7 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
         customBody: Form(
           key: _formKey,
           child: FormSection(
+            onPressed: _handleSubmit,
             children: [
               // Intent of valuation section
               FormFieldWrapper(
@@ -1073,35 +1074,6 @@ class _GeneralDetailPageState extends State<GeneralDetailPage> {
                         ),
                       ],
                     ],
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSizes.padding(context, SizeCategory.small),
-                  vertical:
-                      AppSizes.padding(context, SizeCategory.xxxlarge) * 2,
-                ),
-                child: Column(
-                  children: [
-                    CustomButton(
-                      text: "Save & Next",
-                      onPressed: () => _handleSubmit(),
-                      backgroundColor: AppColors.darkTeal,
-                      foregroundColor: AppColors.white,
-                    ),
-                    SizedBox(
-                      height: AppSizes.padding(context, SizeCategory.medium),
-                    ),
-                    CustomButton(
-                      text: "Back",
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      backgroundColor: AppColors.white,
-                      foregroundColor: AppColors.darkTeal,
-                      borderColor: AppColors.accent,
-                    ),
                   ],
                 ),
               ),
