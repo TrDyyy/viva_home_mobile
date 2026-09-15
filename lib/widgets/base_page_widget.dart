@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viva_home_mobile/pages/splash_page.dart';
+import 'package:viva_home_mobile/widgets/checkbox_individual_widget.dart';
 import '../utils/constants.dart';
 import '../utils/custom_button.dart';
 
@@ -7,18 +8,22 @@ enum BorderEdge { top, right, bottom, left }
 
 enum CardLayoutType { grid, list }
 
+enum ContentType { container, modal }
+
 class CardItemConfig {
   final IconData icon;
   final String title;
   final bool isEnabled;
   final VoidCallback onTap;
   final Set<BorderEdge>? borders; // For grid layout borders
+  final String nodeKey;
 
   const CardItemConfig({
     required this.icon,
     required this.title,
     required this.isEnabled,
     required this.onTap,
+    required this.nodeKey,
     this.borders,
   });
 }
@@ -26,19 +31,48 @@ class CardItemConfig {
 /// Configuration for the page layout
 class PageConfig {
   final String title;
-  final String username;
-  final List<CardItemConfig> cards;
+  final String? username;
+  final List<CardItemConfig>? cards;
   final bool useGridLayout; // true = 2-column grid, false = vertical list
   final String? actionButtonText;
   final VoidCallback? actionButtonOnPressed;
+  final ContentType contentType;
+  final List<ModalSection>? modalSections; // For modal content
+  final bool? isAppBarVisible;
+  final Widget? customBody;
 
   const PageConfig({
     required this.title,
-    required this.username,
-    required this.cards,
+    this.username,
+    this.cards,
     this.useGridLayout = false,
     this.actionButtonText,
     this.actionButtonOnPressed,
+    this.contentType = ContentType.container,
+    this.modalSections,
+    this.isAppBarVisible = false,
+    this.customBody,
+  });
+}
+
+class SectionItem {
+  final String text;
+  final String nodeKey;
+
+  SectionItem({required this.text, required this.nodeKey});
+}
+
+class ModalSection {
+  final String title;
+  final String subtitle;
+  final List<SectionItem> items;
+  final VoidCallback? onActionPressed;
+
+  ModalSection({
+    required this.title,
+    required this.subtitle,
+    required this.items,
+    this.onActionPressed,
   });
 }
 
@@ -50,27 +84,90 @@ class BasePageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/background1.png"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              // Header area
-              _buildHeader(context),
+      resizeToAvoidBottomInset: false,
+      appBar: config.isAppBarVisible == true
+          ? AppBar(
+              title: Text(config.title.toUpperCase()),
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              centerTitle: true,
+              backgroundColor: AppColors.white,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.close, color: AppColors.darkTeal),
+                  onPressed: () {
+                    // Handle close action
+                  },
+                ),
+              ],
+            )
+          : null,
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/background1.png"),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  // Header area
+                  config.isAppBarVisible == false
+                      ? _buildHeader(context)
+                      : Container(),
 
-              // Content area
-              Expanded(child: _buildContentContainer(context)),
-            ],
+                  // Content area
+                  Expanded(
+                    child:
+                        config.customBody ??
+                        switch (config.contentType) {
+                          ContentType.container => _buildContentContainer(
+                            context,
+                          ),
+                          ContentType.modal => _buildModalWrapper(context),
+                        },
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModalWrapper(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: AppSizes.padding(context, SizeCategory.large),
+        bottom: AppSizes.padding(context, SizeCategory.medium),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(child: _buildContentModal(context)),
+          if (config.actionButtonText != null &&
+              config.actionButtonOnPressed != null)
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSizes.padding(context, SizeCategory.xxlarge),
+                ),
+                child: _buildActionButton(
+                  context,
+                  bg: AppColors.white,
+                  fg: AppColors.darkTeal,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -107,7 +204,7 @@ class BasePageWidget extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    config.username,
+                    config.username ?? '',
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: AppSizes.font(context, SizeCategory.medium),
@@ -212,39 +309,262 @@ class BasePageWidget extends StatelessWidget {
     );
   }
 
+  Widget _buildContentModal(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(
+        left: AppSizes.padding(context, SizeCategory.medium),
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(
+            AppSizes.radius(context, SizeCategory.xlarge),
+          ),
+          bottomLeft: Radius.circular(
+            AppSizes.radius(context, SizeCategory.xlarge),
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black,
+            blurRadius:
+                AppSizes.padding(context, SizeCategory.medium) *
+                0.625, // ~10 responsive
+            offset: const Offset(0, -3),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: AppSizes.padding(context, SizeCategory.large),
+          top: AppSizes.padding(context, SizeCategory.medium),
+        ),
+        child: Column(
+          children: [
+            // Drag indicator
+            Container(
+              width:
+                  AppSizes.padding(context, SizeCategory.large) *
+                  1.6, // ~38 responsive
+              height:
+                  AppSizes.padding(context, SizeCategory.small) *
+                  0.5, // ~4 responsive
+              margin: EdgeInsets.only(
+                bottom: AppSizes.padding(context, SizeCategory.large),
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.lightGray,
+                borderRadius: BorderRadius.circular(
+                  AppSizes.radius(context, SizeCategory.small) * 0.5,
+                ),
+              ),
+            ),
+
+            // Cards content with action button
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSizes.padding(context, SizeCategory.medium),
+                ),
+                child: Column(
+                  children: [
+                    if (config.modalSections != null)
+                      ...config.modalSections!.map(
+                        (section) => Padding(
+                          padding: EdgeInsets.only(
+                            bottom: AppSizes.padding(
+                              context,
+                              SizeCategory.small,
+                            ),
+                          ),
+                          child: _buildCompletedSection(
+                            context: context,
+                            title: section.title,
+                            subtitle: section.subtitle,
+                            items: section.items,
+                            onActionPressed: section.onActionPressed,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompletedSection({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required List<SectionItem> items,
+    VoidCallback? onActionPressed,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header with title, subtitle and action button (arrow)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    subtitle.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryTeal,
+                    ),
+                  ),
+                  Text(
+                    title.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textDark,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (onActionPressed != null)
+              InkWell(
+                onTap: onActionPressed,
+                child: Container(
+                  padding: EdgeInsets.all(
+                    AppSizes.padding(context, SizeCategory.medium) * 0.7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryTeal,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(
+                        AppSizes.radius(context, SizeCategory.small),
+                      ),
+                      bottomLeft: Radius.circular(
+                        AppSizes.radius(context, SizeCategory.small),
+                      ),
+                    ),
+                  ),
+                  child: Icon(Icons.arrow_forward, color: AppColors.darkTeal),
+                ),
+              ),
+          ],
+        ),
+        SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
+        Container(
+          color: AppColors.primaryTeal,
+          height: AppSizes.padding(context, SizeCategory.small) * 0.2,
+        ),
+        SizedBox(height: AppSizes.padding(context, SizeCategory.small)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "See details",
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: AppSizes.font(context, SizeCategory.small),
+              ),
+            ),
+            Icon(Icons.close, color: AppColors.accent),
+          ],
+        ),
+        SizedBox(height: AppSizes.padding(context, SizeCategory.medium)),
+        // List items
+        ...items.map(
+          (item) => Container(
+            margin: EdgeInsets.only(
+              bottom: AppSizes.padding(context, SizeCategory.medium),
+            ),
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSizes.padding(context, SizeCategory.medium),
+              vertical: AppSizes.padding(context, SizeCategory.small),
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.darkGray),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  item.text,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                IndividualCheckboxWidget.standalone(
+                  nodeKey: item.nodeKey,
+                  showtitle: false,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildGridLayout(BuildContext context) {
     return Wrap(
       alignment: WrapAlignment.center,
-      children: config.cards.map((card) {
-        return SizedBox(
-          width: AppSizes.screenWidth(context) / 2.3,
-          child: _buildCard(context, card, CardLayoutType.grid),
-        );
-      }).toList(),
+      children: config.cards != null
+          ? config.cards!.map((card) {
+              return SizedBox(
+                width: AppSizes.screenWidth(context) / 2.3,
+                child: _buildCard(
+                  context,
+                  card.nodeKey,
+                  card,
+                  CardLayoutType.grid,
+                ),
+              );
+            }).toList()
+          : [],
     );
   }
 
   Widget _buildListLayout(BuildContext context) {
     return Column(
-      children: config.cards
-          .map((card) => _buildCard(context, card, CardLayoutType.list))
-          .toList(),
+      children: config.cards != null
+          ? config.cards!
+                .map(
+                  (card) => _buildCard(
+                    context,
+                    card.nodeKey,
+                    card,
+                    CardLayoutType.list,
+                  ),
+                )
+                .toList()
+          : [],
     );
   }
 
-  Widget _buildActionButton(BuildContext context) {
+  Widget _buildActionButton(BuildContext context, {Color? bg, Color? fg}) {
     if (config.actionButtonText == null ||
         config.actionButtonOnPressed == null) {
       return const SizedBox.shrink();
     }
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: AppSizes.padding(context, SizeCategory.large)),
+      padding: EdgeInsets.symmetric(
+        vertical: AppSizes.padding(context, SizeCategory.large),
+      ),
       child: CustomButton(
         text: config.actionButtonText!,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.darkTeal,
-          foregroundColor: AppColors.white,
+          backgroundColor: bg ?? AppColors.darkTeal,
+          foregroundColor: fg ?? AppColors.white,
         ),
         onPressed: config.actionButtonOnPressed!,
         width: double.infinity,
@@ -254,6 +574,7 @@ class BasePageWidget extends StatelessWidget {
 
   Widget _buildCard(
     BuildContext context,
+    String? nodeKey,
     CardItemConfig card,
     CardLayoutType layoutType,
   ) {
@@ -328,18 +649,11 @@ class BasePageWidget extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      width: isGrid
-                          ? AppSizes.padding(context, SizeCategory.medium)
-                          : AppSizes.padding(context, SizeCategory.small),
+                      width: AppSizes.padding(context, SizeCategory.small),
                     ),
-                    Icon(
-                      isGrid
-                          ? Icons.check_box_outline_blank
-                          : Icons.square_outlined,
-                      size: AppSizes.icon(context, SizeCategory.small),
-                      color: card.isEnabled
-                          ? AppColors.primaryTeal
-                          : AppColors.darkGray,
+                    IndividualCheckboxWidget(
+                      nodeKey: nodeKey!,
+                      showtitle: false,
                     ),
                   ],
                 ),

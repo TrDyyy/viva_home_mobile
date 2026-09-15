@@ -42,53 +42,62 @@ class CustomBottomSheet extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final bottomSheetHeight = height ?? AppSizes.screenHeight(context) * 0.6;
-    return Container(
-      height: bottomSheetHeight,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(AppSizes.radius(context, SizeCategory.large)),
-          topRight: Radius.circular(AppSizes.radius(context, SizeCategory.large)),
-        ),
+Widget build(BuildContext context) {
+  final bottomSheetHeight = height ?? AppSizes.screenHeight(context) * 0.6;
+  return Container(
+    height: bottomSheetHeight,
+    decoration: BoxDecoration(
+      color: AppColors.white,
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(AppSizes.radius(context, SizeCategory.large)),
+        topRight: Radius.circular(AppSizes.radius(context, SizeCategory.large)),
       ),
-      child: Column(
-        children: [
-          // Drag handle
-          if (enableDrag)
-            Container(
-              margin: EdgeInsets.only(top: AppSizes.padding(context, SizeCategory.medium)),
-              decoration: BoxDecoration(
-                color: AppColors.lightGray,
+    ),
+    child: Column(
+      children: [
+        // Drag handle
+        if (enableDrag)
+          Container(
+            margin: EdgeInsets.only(top: AppSizes.padding(context, SizeCategory.medium)),
+            width: AppSizes.padding(context, SizeCategory.large) * 1.6,
+            height: AppSizes.padding(context, SizeCategory.small) * 0.5,
+            decoration: BoxDecoration(
+              color: AppColors.lightGray,
+              borderRadius: BorderRadius.circular(
+                AppSizes.radius(context, SizeCategory.small) * 0.5,
               ),
             ),
-          
-          // Title
-          if (title != null)
-            Padding(
-              padding: EdgeInsets.all(AppSizes.padding(context, SizeCategory.large)),
-              child: Text(
-                title!,
-                style: TextStyle(
-                  fontSize: AppSizes.font(context, SizeCategory.xxxlarge),
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.darkTeal,
-                ),
+          ),
+        
+        // Title
+        if (title != null)
+          Padding(
+            padding: EdgeInsets.all(AppSizes.padding(context, SizeCategory.large)),
+            child: Text(
+              title!,
+              style: TextStyle(
+                fontSize: AppSizes.font(context, SizeCategory.xxxlarge),
+                fontWeight: FontWeight.w900,
+                color: AppColors.darkTeal,
               ),
             ),
-          
-          // Content
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSizes.padding(context, SizeCategory.large),
-              ),
+          ),
+        
+        // Content with keyboard avoidance
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: AppSizes.padding(context, SizeCategory.large),
+              right: AppSizes.padding(context, SizeCategory.large),
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: SingleChildScrollView(
               child: child,
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 }

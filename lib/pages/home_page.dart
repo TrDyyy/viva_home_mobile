@@ -25,6 +25,7 @@ class _HomePageState extends State<HomePage> {
             icon: Icons.key,
             title: AppStrings.details,
             isEnabled: true,
+            nodeKey: "det_root",
             onTap: () {
               Navigator.push(
                 context,
@@ -38,6 +39,7 @@ class _HomePageState extends State<HomePage> {
             icon: Icons.home,
             title: AppStrings.survey,
             isEnabled: true,
+            nodeKey: "det_root",
             onTap: () {
               // Navigate to survey
             },
@@ -46,6 +48,7 @@ class _HomePageState extends State<HomePage> {
             icon: Icons.description,
             title: AppStrings.surveyorsRequests,
             isEnabled: false,
+            nodeKey: "det_root",
             onTap: () {
               // Disabled
             },
